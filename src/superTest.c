@@ -22,6 +22,9 @@
  *                               INCLUDES
  *****************************************************************************/
 #include "include/testFramework.h"
+#include "include/lambdaSearch.h"
+#include "include/vectorImports.h"
+#include "include/yeoJohnson.h"
 
 /*****************************************************************************
  *                                TESTS

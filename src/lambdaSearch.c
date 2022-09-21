@@ -42,9 +42,9 @@
  *****************************************************************************/
 
 static const double g_maxHighDouble = (double)0x7FFFFFFFFFFFFF;
-static const double g_maxLowDouble = (double)0x80000000000000;
+//static const double g_maxLowDouble = (double)0x80000000000000;
 static const double g_maxHighFloat = (float)0x7FFFFFFF;
-static const double g_maxLowFloat = (float)0x80000000;
+//static const double g_maxLowFloat = (float)0x80000000;
 
 /*****************************************************************************
  *                           PRIVATE FUNCTIONS
@@ -60,11 +60,11 @@ static const double g_maxLowFloat = (float)0x80000000;
  */
 static int lsAverage(double *vector, int row_count, double *result) {
   if (vector == NULL) {
-    printf("lsAverage: vector is null\n");
+    printf("\tlsAverage: vector is null\n");
     return -1;
   }
   if (row_count <= 0) {
-    printf("lsAverage: not enough rows\n");
+    printf("\tlsAverage: not enough rows\n");
     return -2;
   }
   double limit = g_maxHighDouble / row_count;
@@ -72,7 +72,7 @@ static int lsAverage(double *vector, int row_count, double *result) {
   for (int i = 0; i < row_count; i++) {
     double component = *(vector + i);
     if (component > limit || component < -limit) {
-      printf("lsAverage: component exeeded limit, abort for overflow "
+      printf("\tlsAverage: component exeeded limit, abort for overflow "
              "protection\n");
       return -3;
     }
@@ -92,11 +92,11 @@ static int lsAverage(double *vector, int row_count, double *result) {
  */
 static int lsAveragef(float *vector, int row_count, float *result) {
   if (vector == NULL) {
-    printf("lsAveragef: vector is null\n");
+    printf("\tlsAveragef: vector is null\n");
     return -1;
   }
   if (row_count <= 0) {
-    printf("lsAveragef: not enough rows\n");
+    printf("\tlsAveragef: not enough rows\n");
     return -2;
   }
   float limit = g_maxHighFloat / row_count;
@@ -104,7 +104,7 @@ static int lsAveragef(float *vector, int row_count, float *result) {
   for (int i = 0; i < row_count; i++) {
     double component = *(vector + i);
     if (component > limit || component < -limit) {
-      printf("lsAveragef: component exeeded limit, abort for overflow "
+      printf("\tlsAveragef: component exeeded limit, abort for overflow "
              "protection\n");
       return -3;
     }
@@ -162,11 +162,11 @@ static int lsAverageUf(float *vector, int row_count, float *result) {
 static int lsVariance(double *vector, double average, int row_count,
                       double *result) {
   if (vector == NULL) {
-    printf("lsVariance: vector is null\n");
+    printf("\tlsVariance: vector is null\n");
     return -1;
   }
   if (row_count <= 1) {
-    printf("lsVariance: not enough rows\n");
+    printf("\tlsVariance: not enough rows\n");
     return -2;
   }
   *result = 0;
@@ -174,7 +174,7 @@ static int lsVariance(double *vector, double average, int row_count,
   for (int i = 0; i < row_count; i++) {
     double component = *(vector + i);
     if (component > limit || component < -limit) {
-      printf("lsVariance: component=%f exeeded limit=%f, average=%f, abort for "
+      printf("\tlsVariance: component=%f exeeded limit=%f, average=%f, abort for "
              "overflow protection\n",
              component, limit, average);
       return -3;
@@ -198,11 +198,11 @@ static int lsVariance(double *vector, double average, int row_count,
 static int lsVariancef(float *vector, float average, int row_count,
                        float *result) {
   if (vector == NULL) {
-    printf("lsVariancef: vector is null\n");
+    printf("\tlsVariancef: vector is null\n");
     return -1;
   }
   if (row_count <= 1) {
-    printf("lsVariancef: not enough rows\n");
+    printf("\tlsVariancef: not enough rows\n");
     return -2;
   }
   *result = 0;
@@ -210,7 +210,7 @@ static int lsVariancef(float *vector, float average, int row_count,
   for (int i = 0; i < row_count; i++) {
     double component = *(vector + i);
     if (component > limit || component < -limit) {
-      printf("lsVariancef: component exeeded limit, abort for overflow "
+      printf("\tlsVariancef: component exeeded limit, abort for overflow "
              "protection\n");
       return -3;
     }
@@ -276,11 +276,11 @@ static int lsVarianceUf(float *vector, float average, int row_count,
 static int lsSkew(double *vector, double average, double variance,
                   int row_count, double *result) {
   if (vector == NULL) {
-    printf("lsSkew: vector is null\n");
+    printf("\tlsSkew: vector is null\n");
     return -1;
   }
   if (row_count <= 2) {
-    printf("lsSkew:  not enough rows\n");
+    printf("\tlsSkew:  not enough rows\n");
     return -2;
   }
   double limit = cbrt(g_maxHighDouble / row_count) * variance + average;
@@ -288,7 +288,7 @@ static int lsSkew(double *vector, double average, double variance,
     double component = *(vector + i);
     if (component > limit || component < -limit) {
       printf(
-          "lsSkew:  component exeeded limit, abort for overflow protection\n");
+          "\tlsSkew:  component exeeded limit, abort for overflow protection\n");
       return -3;
     }
     *result += ((component - average) / variance) *
@@ -312,11 +312,11 @@ static int lsSkew(double *vector, double average, double variance,
 static int lsSkewf(float *vector, float average, float variance, int row_count,
                    float *result) {
   if (vector == NULL) {
-    printf("lsSkewf: vector is null\n");
+    printf("\tlsSkewf: vector is null\n");
     return -1;
   }
   if (row_count <= 2) {
-    printf("lsSkew:  not enough rows\n");
+    printf("\tlsSkew:  not enough rows\n");
     return -2;
   }
   float limit = cbrt(g_maxHighFloat / row_count) * variance + average;
@@ -324,7 +324,7 @@ static int lsSkewf(float *vector, float average, float variance, int row_count,
     float component = *(vector + i);
     if (component > limit || component < -limit) {
       printf(
-          "lsSkew:  component exeeded limit, abort for overflow protection\n");
+          "\tlsSkew:  component exeeded limit, abort for overflow protection\n");
       return -3;
     }
     *result += ((component - average) / variance) *
@@ -441,25 +441,25 @@ static int lsSkewIntervalStep(double *vector, int row_count, double *skew,
   double average;
   int errnum = lsAverage(vector, row_count, &average);
   if (errnum != 0) { // Mittelwert
-    printf("exception in lsAverage: ");
+    printf("\texception in lsAverage: ");
     return -1;
   }
   double sd;
   errnum = lsVariance(vector, average, row_count, &sd);
   if (errnum != 0) { // Standardabweichung
-    printf("exception in lsVariance: ");
+    printf("\texception in lsVariance: ");
     return -2;
   }
   double new_skew;
   errnum = lsSkew(vector, average, sd, row_count, &new_skew);
   if (errnum != 0) { // Schiefe
-    printf("exception in lsSkew: ");
+    printf("\texception in lsSkew: ");
     return -3;
   }
   int compare_flag;
   errnum = lsIsCloserToZero(*skew, new_skew, &compare_flag);
   if (errnum != 0) { // Vergleich mit vorheriger Schiefe
-    printf("exception in lsIsCloserToZero: ");
+    printf("\texception in lsIsCloserToZero: ");
     return -1;
   }
   if (compare_flag) {
@@ -485,25 +485,25 @@ static int lsSkewIntervalStepf(float *vector, int row_count, float *skew,
   float average;
   int errnum = lsAveragef(vector, row_count, &average);
   if (errnum != 0) { // Mittelwert
-    printf("exception in lsAveragef: ");
+    printf("\texception in lsAveragef: ");
     return -1;
   }
   float sd;
   errnum = lsVariancef(vector, average, row_count, &sd);
   if (errnum != 0) { // Standardabweichung
-    printf("exception in lsVariancef: ");
+    printf("\texception in lsVariancef: ");
     return -1;
   }
   float new_skew;
   errnum = lsSkewf(vector, average, sd, row_count, &new_skew);
   if (errnum != 0) { // Schiefe
-    printf("exception in lsSkewf: ");
+    printf("\texception in lsSkewf: ");
     return -1;
   }
   int compare_flag;
   errnum = lsIsCloserToZerof(*skew, new_skew, &compare_flag);
   if (errnum != 0) { // Vergleich mit vorheriger Schiefe
-    printf("exception in lsIsCloserToZero: ");
+    printf("\texception in lsIsCloserToZero: ");
     return -1;
   }
   if (compare_flag) {
@@ -591,7 +591,7 @@ int lsLambdaSearch(double *vector, double interval_start, double interval_end,
   *result_skew = g_maxHighDouble;
   double *zws = (double *)malloc(sizeof(double) * row_count);
   if (zws == NULL) {
-    printf("Error: failed to allocate memory.\n");
+    printf("\tFailed to allocate memory.\n");
     return -1;
   }
   memset(zws, 0, sizeof(double) * row_count);
@@ -601,14 +601,14 @@ int lsLambdaSearch(double *vector, double interval_start, double interval_end,
        lambda_i += interval_step) {
     for (int i = 0; i < row_count; i++) {
       if (yjCalculation(*(vector + i), lambda_i, zws + i) != 0) {
-        printf("error occured during yeoJohnson\n");
+        printf("\texception occured during yeoJohnson\n");
         free(zws);
         return -2;
       }
     }
     int skew_test_flag;
     if (lsSkewIntervalStep(zws, row_count, result_skew, &skew_test_flag) != 0) {
-      printf("error occured during skewTest\n");
+      printf("\texception occured during skewTest\n");
       free(zws);
       return -3;
     }
@@ -637,7 +637,7 @@ int lsLambdaSearchf(float *vector, float interval_start, float interval_end,
                     float *result_skew) {
   float *zws = (float *)malloc(sizeof(float) * row_count);
   if (zws == NULL) {
-    printf("Error: failed to allocate memory.\n");
+    printf("\tFailed to allocate memory.\n");
     return -1;
   }
   memset(zws, 0, sizeof(float) * row_count);
@@ -647,7 +647,7 @@ int lsLambdaSearchf(float *vector, float interval_start, float interval_end,
        lambda_i += interval_step) {
     for (int i = 0; i < row_count; i++) {
       if (yjCalculationf(*(vector + i), lambda_i, &zws[i]) != 0) {
-        printf("error occured during yeoJohnson\n");
+        printf("\texception occured during yeoJohnson\n");
         free(zws);
         return -1;
       }
@@ -655,7 +655,7 @@ int lsLambdaSearchf(float *vector, float interval_start, float interval_end,
     int skew_test_flag;
     if (lsSkewIntervalStepf(zws, row_count, result_skew, &skew_test_flag) !=
         0) {
-      printf("error occured during skewTest\n");
+      printf("\texception occured during skewTest\n");
       free(zws);
       return -2;
     }
@@ -685,7 +685,7 @@ int lsLambdaSearchU(double *vector, double interval_start, double interval_end,
                     double *result_skew) {
   double *zws = (double *)malloc(sizeof(double) * row_count);
   if (zws == NULL) {
-    printf("Error: failed to allocate memory.\n");
+    printf("\tFailed to allocate memory.\n");
     return -1;
   }
   memset(zws, 0, sizeof(double) * row_count);
@@ -723,7 +723,7 @@ int lsLambdaSearchUf(float *vector, float interval_start, float interval_end,
                      float *result_skew) {
   float *zws = (float *)malloc(sizeof(float) * row_count);
   if (zws == NULL) {
-    printf("Error: failed to allocate memory.\n");
+    printf("\tFailed to allocate memory.\n");
     return -1;
   }
   memset(zws, 0, sizeof(float) * row_count);
@@ -995,7 +995,7 @@ void test_lsSkewIntervalStep(void) {
   printf("Testing lsSkewIntervalStep in lambdaSearch.c\n");
   double vector[4] = {0, 1, 2, 3};
   double skew = 10;
-  double result = 0;
+  int result = 0;
   assert_int_equals(lsSkewIntervalStep(vector, 0, &skew, &result), -1,
                     "Error: should abort during lsAverage");
   assert_int_equals(lsSkewIntervalStep(vector, 1, &skew, &result), -2,
@@ -1015,7 +1015,7 @@ void test_lsSkewIntervalStepf(void) {
   printf("Testing lsSkewIntervalStepf in lambdaSearch.c\n");
   float vector[4] = {0, 1, 2, 3};
   float skew = 10;
-  float result = 0;
+  int result = 0;
   assert_int_equals(lsSkewIntervalStepf(vector, 0, &skew, &result), -1,
                     "Error: should abort during lsAveragef");
   assert_int_equals(lsSkewIntervalStepf(vector, 1, &skew, &result), -2,
@@ -1035,7 +1035,7 @@ void test_lsSkewIntervalStepU(void) {
   printf("Testing lsSkewIntervalStepU in lambdaSearch.c\n");
   double vector[4] = {0, 1, 2, 3};
   double skew = 10;
-  double result = 0;
+  int result = 0;
   assert_int_equals(lsSkewIntervalStep(vector, 4, &skew, &result), 0,
                     "Error: should execute");
   assert_double_equals(result, 1,
@@ -1047,7 +1047,7 @@ void test_lsSkewIntervalStepUf(void) {
   printf("Testing lsSkewIntervalStepUf in lambdaSearch.c\n");
   float vector[4] = {0, 1, 2, 3};
   float skew = 10;
-  float result = 0;
+  int result = 0;
   assert_int_equals(lsSkewIntervalStepf(vector, 4, &skew, &result), 0,
                     "Error: should execute");
   assert_float_equals(result, 1,

@@ -72,11 +72,11 @@ static boundaryBoxf bBf_yj3;
  */
 static int yjFormular1(double y, double lambda, double *result) {
   if (!bB_set) {
-    printf("yjFormular1: boundary box is not set\n");
+    printf("\tyjFormular1: boundary box is not set\n");
     return -1;
   }
   if (y > bB_yj1.upper_limit || y < bB_yj1.lower_limit) {
-    printf("yjFormular1: value not inside boundary box\n");
+    printf("\tyjFormular1: value not inside boundary box\n");
     return -2;
   }
   *result = (pow(y + 1, lambda) - 1) / lambda;
@@ -94,11 +94,11 @@ static int yjFormular1(double y, double lambda, double *result) {
  */
 static int yjFormular1f(float y, float lambda, float *result) {
   if (!bBf_set) {
-    printf("yjFormular1f: boundary box is not set\n");
+    printf("\tyjFormular1f: boundary box is not set\n");
     return -1;
   }
   if (y > bBf_yj1.upper_limit || y < bBf_yj1.lower_limit) {
-    printf("yjFormular1f: value not inside boundary box\n");
+    printf("\tyjFormular1f: value not inside boundary box\n");
     return -2;
   }
   *result = (powf(y + 1, lambda) - 1) / lambda;
@@ -144,7 +144,7 @@ static int yjFormular1Uf(float y, float lambda, float *result) {
  */
 static int yjFormular2(double y, double *result) {
   if (y == g_max_high_double) {
-    printf("yjFormular2: overflow y is equal to g_max_low_double\n");
+    printf("\tyjFormular2: overflow y is equal to g_max_low_double\n");
     return -1;
   }
   *result = log(y + 1);
@@ -162,7 +162,7 @@ static int yjFormular2(double y, double *result) {
  */
 static int yjFormular2f(float y, float *result) {
   if (y == g_max_high_float) {
-    printf("yjFormular2f: overflow y is equal to g_max_low_float\n");
+    printf("\tyjFormular2f: overflow y is equal to g_max_low_float\n");
     return -1;
   }
   *result = logf(y + 1);
@@ -206,11 +206,11 @@ static int yjFormular2Uf(float y, float *result) {
  */
 static int yjFormular3(double y, double lambda, double *result) {
   if (!bB_set) {
-    printf("yjFormular3: boundary box is not set\n");
+    printf("\tyjFormular3: boundary box is not set\n");
     return -1;
   }
   if (y > bB_yj3.upper_limit || y < bB_yj3.lower_limit) {
-    printf("yjFormular3: value not inside boundary box\n");
+    printf("\tyjFormular3: value not inside boundary box\n");
     return -2;
   }
   *result = -(pow(-y + 1, 2 - lambda) - 1) / (2 - lambda);
@@ -228,11 +228,11 @@ static int yjFormular3(double y, double lambda, double *result) {
  */
 static int yjFormular3f(float y, float lambda, float *result) {
   if (!bBf_set) {
-    printf("yjFormular3f: boundary box is not set\n");
+    printf("\tyjFormular3f: boundary box is not set\n");
     return -1;
   }
   if (y > bBf_yj3.upper_limit || y < bBf_yj3.lower_limit) {
-    printf("yjFormular3f: value not inside boundary box\n");
+    printf("\tyjFormular3f: value not inside boundary box\n");
     return -2;
   }
   *result = -(powf(-y + 1, 2 - lambda) - 1) / (2 - lambda);
@@ -278,7 +278,7 @@ static int yjFormular3Uf(float y, float lambda, float *result) {
  */
 static int yjFormular4(double y, double *result) {
   if (y == g_max_low_double) {
-    printf("yjFormular4: overflow y is equal to g_max_low_double\n");
+    printf("\tyjFormular4: overflow y is equal to g_max_low_double\n");
     return -1;
   }
   *result = -log(-y + 1);
@@ -296,7 +296,7 @@ static int yjFormular4(double y, double *result) {
  */
 static int yjFormular4f(float y, float *result) {
   if (y == g_max_low_float) {
-    printf("yjFormular4f: overflow y is equal to g_max_low_float\n");
+    printf("\tyjFormular4f: overflow y is equal to g_max_low_float\n");
     return -1;
   }
   *result = -logf(-y + 1);

@@ -1,7 +1,7 @@
 # -*- MakeFile -*-
 
 CC=gcc
-CFLAGS=-g -Wall -Werror -clang-format
+CFLAGS=-g -Wall -Werror
 SRC=src
 OBJ=obj
 BINDIR=bin
