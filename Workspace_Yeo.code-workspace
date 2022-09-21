@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.c": "c",
+			"stdlib.h": "c",
+			"math.h": "c",
+			"testframework.h": "c",
+			"float.h": "c",
+			"lambdasearch.h": "c",
+			"vectorimports.h": "c"
+		}
+	}
+}
