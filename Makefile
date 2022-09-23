@@ -5,7 +5,8 @@ CFLAGS=-g -Wall -Werror
 SRC=src
 OBJ=obj
 BINDIR=bin
-BIN=$(BINDIR)/main
+BINEXE=$(BINDIR)/main
+BINSO=$(BINDIR)/main.so
 SRCS=$(wildcard $(SRC)/*.c)
 OBJS=$(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRCS))
 
@@ -15,10 +16,18 @@ WOBJ=.\obj\*
 
 SUBMITNAME=project.zip
 
-all:$(BIN)
+all:$(BINEXE)
 
-$(BIN): $(OBJS)
+$(BINEXE): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@
+
+$(OBJ)/%.o: $(SRC)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+share: bin/comInterface.so
+
+bin/comInterface.so: $(OBJS)
+	$(CC) -shared $(CFLAGS) $(OBJS) -o $@
 
 $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
