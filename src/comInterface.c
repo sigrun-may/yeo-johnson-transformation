@@ -37,20 +37,35 @@
  *                           PUBLIC FUNCTIONS
  *****************************************************************************/
 
-int ciLambdaOperationOnMatrixFromFileS(char *file_path, matrix *vector_field,
+int ciLambdaOperationOnMatrixFromFileS(char *file_path,
                                        double interval_start,
                                        double interval_end,
-                                       double interval_step) {
+                                       double interval_step, MATRIX **return_matrix) {
   int err_num = 0;
-  err_num = importVectorTableFromCsv(file_path, vector_field);
+  *(return_matrix) = (MATRIX *) malloc(sizeof(MATRIX));
+  if (return_matrix == NULL) {
+    printf("exception could not allocate memory for matrix\n");
+    return -1;
+  }
+  err_num = importVectorTableFromCsv(file_path, &(*return_matrix));
   if (err_num != 0) {
     printf("abort on import of table from csv\n");
     return -1;
   }
-  for (int i = 0; i < vector_field->cols; i++) {
-    err_num = lsLambdaSearch(*(vector_field->data + i), interval_start,
-                             interval_end, interval_step, vector_field->rows,
-                             vector_field->lambda + i, vector_field->skew + i);
+  for (int i = 0; i < (*return_matrix)->cols; i++) {
+    err_num = lsLambdaSearch(*((*return_matrix)->data + i), interval_start,
+                             interval_end, interval_step, (*return_matrix)->rows,
+                             &*((*return_matrix)->lambda + i), &*((*return_matrix)->skew + i));
+    if (err_num != 0) {
+      printf("abort on lambda search\n");
+    }
+  }
+  return 0;
+}
+
+int ciLambdaOperation(double interval_start, double interval_end, double interval_step, MATRIX *input_matrix) {
+  for (int i = 0; i < input_matrix->cols; i++) {
+    int err_num = lsLambdaSearch(*(input_matrix->data + i), interval_start, interval_end, interval_step, input_matrix->rows, &*(input_matrix->lambda + i), &*(input_matrix->skew + i));
     if (err_num != 0) {
       printf("abort on lambda search\n");
     }

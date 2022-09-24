@@ -24,6 +24,7 @@ int lsLambdaSearchUf(float *vector, float interval_start, float interval_end,
                      float *result_skew);
 
 // unit tests
+#ifdef UNIT_TEST
 void test_lsAverage(void);
 void test_lsAveragef(void);
 void test_lsAverageU(void);
@@ -46,5 +47,6 @@ void test_lsLambdaSearch(void);
 void test_lsLambdaSearchf(void);
 void test_lsLambdaSearchU(void);
 void test_lsLambdaSearchUf(void);
+#endif
 
 #endif /* LAMBDASEARCH_H */

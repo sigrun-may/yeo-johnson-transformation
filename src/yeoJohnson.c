@@ -40,10 +40,10 @@
  *                               CONSTANTS
  *****************************************************************************/
 
-static const double g_max_high_double = DBL_MAX;
-static const double g_max_low_double = -DBL_MAX;
-static const double g_max_high_float = FLT_MAX;
-static const double g_max_low_float = -FLT_MAX;
+static const double g_max_high_double = (double)0x7FFFFFFFFFFFFF;
+static const double g_max_low_double = (double)0x80000000000000;
+static const double g_max_high_float = (float)0x7FFFFFFF;
+static const double g_max_low_float = (float)0x80000000;
 
 /*****************************************************************************
  *                                GLOBALS
@@ -210,7 +210,7 @@ static int yjFormular3(double y, double lambda, double *result) {
     return -1;
   }
   if (y > bB_yj3.upper_limit || y < bB_yj3.lower_limit) {
-    printf("\tyjFormular3: value not inside boundary box\n");
+    printf("\tyjFormular3: value not inside boundary box/ y=%f, ul=%f, ll=%f\n", y, bB_yj3.upper_limit, bB_yj3.lower_limit);
     return -2;
   }
   *result = -(pow(-y + 1, 2 - lambda) - 1) / (2 - lambda);
@@ -524,6 +524,8 @@ int yjCalculationUf(float y, float lambda, float *result) {
 /*****************************************************************************
  *                                  TESTS
  *****************************************************************************/
+
+#ifdef UNIT_TEST
 
 void test_yj1(void) {
   bB_set = 0;
@@ -966,3 +968,5 @@ void test_yjCalculationUf(void) {
                        "Error: result is not equal to expected");
   printf("...done\n");
 }
+
+#endif

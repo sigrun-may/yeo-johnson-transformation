@@ -29,7 +29,7 @@
 /*****************************************************************************
  *                                TESTS
  *****************************************************************************/
-
+#ifdef UNIT_TEST
 /**
  * @brief super test for yeoJohnson.c, tests all functions inside yeoJohnson.c 
  * 
@@ -108,3 +108,4 @@ void test_super_ls(void) {
   test_lsLambdaSearchU();
   test_lsLambdaSearchUf();
 }
+#endif

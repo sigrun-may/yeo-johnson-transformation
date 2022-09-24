@@ -17,31 +17,33 @@
 #define MAX_STRING_SIZE 1024
 
 // structs
-typedef struct {
+typedef struct _MATRIX {
   int rows;
   int cols;
   double **data;
   double *lambda;
   double *skew;
-} matrix;
+} MATRIX;
 
-typedef struct {
+typedef struct _MATRIXF {
   int rows;
   int cols;
   float **data;
   float *lambda;
   float *skew;
-} matrixf;
+} MATRIXF;
 
 // public functions
-int importVectorTableFromCsv(char *file_path, matrix *vector);
-int importVectorTableFromCsvf(char *file_path, matrixf *vector);
+int importVectorTableFromCsv(char *file_path, MATRIX **vector);
+int importVectorTableFromCsvf(char *file_path, MATRIXF *vector);
 
 // unit tests
+#ifdef UNIT_TEST
 void test_getMatrixSizeFromCsv(void);
 void test_fillMatrixFromCsv(void);
 void test_fillMatrixFromCsvf(void);
 void test_importVectorTableFromCsv(void);
 void test_importVectorTableFromCsvf(void);
+#endif
 
 #endif /* VECTORIMPORTS_H */

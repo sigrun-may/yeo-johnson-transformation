@@ -27,7 +27,15 @@ $(OBJ)/%.o: $(SRC)/%.c
 share: bin/comInterface.so
 
 bin/comInterface.so: $(OBJS)
-	$(CC) -shared $(CFLAGS) $(OBJS) -o $@
+	$(CC) -fPIC -shared $(CFLAGS) $(OBJS) -o $@
+
+$(OBJ)/%.o: $(SRC)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+shareW: bin/comInterface.dll
+
+bin/comInterface.dll: $(OBJS)
+	$(CC) -fPIC -shared $(CFLAGS) $(OBJS) -o $@
 
 $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@

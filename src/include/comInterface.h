@@ -12,9 +12,11 @@
 #include "vectorImports.h"
 
 // public functions
-int ciLambdaOperationOnMatrixFromFileS(char *file_path, matrix *vector_field,
-                                       double interval_start,
+int ciLambdaOperationOnMatrixFromFileS(char *file_path, double interval_start,
                                        double interval_end,
-                                       double interval_step);
+                                       double interval_step,
+                                       MATRIX **vector_field);
+
+int ciLambdaOperation(double interval_start, double interval_end, double interval_step, MATRIX *input_matrix);
 
 #endif /* COMINTERFACE_H */

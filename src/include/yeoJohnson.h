@@ -30,6 +30,7 @@ int yjCalculationU(double y, double lambda, double *result);
 int yjCalculationUf(float y, float lambda, float *result);
 
 // unit tests
+#ifdef UNIT_TEST
 void test_yj1(void);
 void test_yj1f(void);
 void test_yj1U(void);
@@ -56,5 +57,6 @@ void test_yjCalculation(void);
 void test_yjCalculationf(void);
 void test_yjCalculationU(void);
 void test_yjCalculationUf(void);
+#endif
 
 #endif /* YEOJOHNSON_H */
