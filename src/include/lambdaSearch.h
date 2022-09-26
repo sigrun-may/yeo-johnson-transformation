@@ -22,10 +22,13 @@ int lsLambdaSearchU(double *vector, double interval_start, double interval_end,
 int lsLambdaSearchUf(float *vector, float interval_start, float interval_end,
                      float interval_step, int row_count, float *result_lambda,
                      float *result_skew);
+int lsSmartSearch(double *vector, double interval_start, double interval_end,
+                  int precision, int row_count, double *result_lambda,
+                  double *result_skew);
 
 // unit tests
 #ifdef UNIT_TEST
-void test_lsAverage(void);
+    void test_lsAverage(void);
 void test_lsAveragef(void);
 void test_lsAverageU(void);
 void test_lsAverageUf(void);

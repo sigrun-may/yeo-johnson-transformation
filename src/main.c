@@ -15,8 +15,8 @@ int main(int agrc, char *agrv[]) {
    // }
    // printf("done");
    double v1[4] = {0,1,2,3};
-   double v2[4] = {1,2,3,4};
-   double v3[4] = {2,3,4,5};
+   double v2[4] = {0,1,2,3};
+   double v3[4] = {0,1,2,3};
    double *v_in[3] = {v1, v2, v3};
    double lambdas[3] = {0, 0, 0};
    double skews[3] = {-10, -10, -10};
@@ -26,7 +26,7 @@ int main(int agrc, char *agrv[]) {
       printf("exception during ciLambdaOperation\n");
    }
    for (int i = 0; i < 3; i++) {
-      printf("i=%i | l=%f | s=%f\n", i, result.lambda[i], result.skew[i]);
+      printf("i=%i | l=%.16f | s=%.16f\n", i, result.lambda[i], result.skew[i]);
    }
    return 0;
 }

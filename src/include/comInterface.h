@@ -17,6 +17,10 @@ int ciLambdaOperationOnMatrixFromFileS(char *file_path, double interval_start,
                                        double interval_step,
                                        MATRIX **vector_field);
 
-int ciLambdaOperation(double interval_start, double interval_end, double interval_step, MATRIX *input_matrix);
+int ciLambdaOperation(double interval_start, double interval_end,
+                      double interval_step, MATRIX *input_matrix);
+
+int ciSmartOperation(double interval_start, double interval_end, int precision,
+                     MATRIX *input_matrix);
 
 #endif /* COMINTERFACE_H */

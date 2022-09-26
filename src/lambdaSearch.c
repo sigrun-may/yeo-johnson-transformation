@@ -608,7 +608,8 @@ int lsLambdaSearch(double *vector, double interval_start, double interval_end,
       }
     }
     int skew_test_flag;
-    if (lsSkewIntervalStep(zws, row_count, &(*result_skew), &skew_test_flag) != 0) {
+    if (lsSkewIntervalStep(zws, row_count, &(*result_skew), &skew_test_flag) !=
+        0) {
       printf("\texception occured during skewTest\n");
       free(zws);
       return -3;
@@ -741,6 +742,48 @@ int lsLambdaSearchUf(float *vector, float interval_start, float interval_end,
     if (skew_test_flag) {
       *result_lambda = lambda_i;
     }
+  }
+  free(zws);
+  return 0;
+}
+
+int lsSmartSearch(double *vector, double interval_start, double interval_end,
+              int precision, int row_count, double *result_lambda,
+              double *result_skew) {
+  double *zws = (double *)malloc(sizeof(double) * row_count);
+  if (zws == NULL) {
+    printf("\tFailed to allocate memory.\n");
+    return -1;
+  }
+  buildBoundaryBox(interval_start, interval_end);
+  double interval_step = 1;
+  for (int s = 0; s <= precision; s++) {
+    memset(zws, 0, sizeof(double) * row_count);
+    *result_lambda = interval_start;
+    *result_skew = g_maxHighDouble;
+    for (double lambda_i = interval_start; lambda_i <= interval_end;
+         lambda_i += interval_step) {
+      for (int i = 0; i < row_count; i++) {
+        if (yjCalculation(*(vector + i), lambda_i, zws + i) != 0) {
+          printf("\texception occured during yeoJohnson\n");
+          free(zws);
+          return -2;
+        }
+      }
+      int skew_test_flag;
+      if (lsSkewIntervalStep(zws, row_count, &(*result_skew),
+                             &skew_test_flag) != 0) {
+        printf("\texception occured during skewTest\n");
+        free(zws);
+        return -3;
+      }
+      if (skew_test_flag) {
+        *result_lambda = lambda_i;
+      }
+    }
+    interval_start = *result_lambda - interval_step;
+    interval_end = *result_lambda + interval_step;
+    interval_step /= 2;
   }
   free(zws);
   return 0;

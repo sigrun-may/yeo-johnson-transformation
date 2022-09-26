@@ -72,3 +72,13 @@ int ciLambdaOperation(double interval_start, double interval_end, double interva
   }
   return 0;
 }
+
+int ciSmartOperation(double interval_start, double interval_end, int precision, MATRIX *input_matrix) {
+  for (int i = 0; i < input_matrix->cols; i++) {
+    int err_num = lsSmartSearch(*(input_matrix->data + i), interval_start, interval_end, precision, input_matrix->rows, &*(input_matrix->lambda + i), &*(input_matrix->skew + i));
+    if (err_num != 0) {
+      printf("abort on lambda search\n");
+    }
+  }
+  return 0;
+}
