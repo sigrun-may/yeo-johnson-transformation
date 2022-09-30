@@ -29,6 +29,8 @@ int yjCalculationf(float y, float lambda, float *result);
 int yjCalculationU(double y, double lambda, double *result);
 int yjCalculationUf(float y, float lambda, float *result);
 
+int yjTransformBy(double **vector, double lambda, int rows);
+
 // unit tests
 #ifdef UNIT_TEST
 void test_yj1(void);

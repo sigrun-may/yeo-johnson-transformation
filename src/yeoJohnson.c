@@ -210,7 +210,8 @@ static int yjFormular3(double y, double lambda, double *result) {
     return -1;
   }
   if (y > bB_yj3.upper_limit || y < bB_yj3.lower_limit) {
-    printf("\tyjFormular3: value not inside boundary box/ y=%f, ul=%f, ll=%f\n", y, bB_yj3.upper_limit, bB_yj3.lower_limit);
+    printf("\tyjFormular3: value not inside boundary box/ y=%f, ul=%f, ll=%f\n",
+           y, bB_yj3.upper_limit, bB_yj3.lower_limit);
     return -2;
   }
   *result = -(pow(-y + 1, 2 - lambda) - 1) / (2 - lambda);
@@ -517,6 +518,19 @@ int yjCalculationUf(float y, float lambda, float *result) {
     } else if (lambda == 2) {
       yjFormular4Uf(y, result);
     }
+  }
+  return 0;
+}
+
+int yjTransformBy(double **vector, double lambda, int rows) {
+  for (int i = 0; i < rows; i++) {
+    double result = 0;
+    int err_num = yjCalculation(*((*vector) + i), lambda, &result);
+    if (err_num != 0) {
+      printf("\texception in yjTransformBy\n");
+      return -1;
+    }
+    *((*vector) + i) = result;
   }
   return 0;
 }

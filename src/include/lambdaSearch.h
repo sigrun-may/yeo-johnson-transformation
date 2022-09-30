@@ -10,6 +10,9 @@
 #define LAMBDASEARCH_H
 
 // public functions
+int lsVariance(double *vector, double average, int row_count, double *result);
+int lsAverage(double *vector, int row_count, double *result);
+
 int lsLambdaSearch(double *vector, double interval_start, double interval_end,
                    double interval_step, int row_count, double *result_lambda,
                    double *result_skew);
@@ -28,7 +31,7 @@ int lsSmartSearch(double *vector, double interval_start, double interval_end,
 
 // unit tests
 #ifdef UNIT_TEST
-    void test_lsAverage(void);
+void test_lsAverage(void);
 void test_lsAveragef(void);
 void test_lsAverageU(void);
 void test_lsAverageUf(void);

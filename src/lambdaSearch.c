@@ -58,7 +58,7 @@ static const double g_maxHighFloat = (float)0x7FFFFFFF;
  * @param result average
  * @return int error return code
  */
-static int lsAverage(double *vector, int row_count, double *result) {
+int lsAverage(double *vector, int row_count, double *result) {
   *result = 0;
   if (vector == NULL) {
     printf("\tlsAverage: vector is null\n");
@@ -159,8 +159,7 @@ static int lsAverageUf(float *vector, int row_count, float *result) {
  * @param result variance of the given vector
  * @return int error return code
  */
-static int lsVariance(double *vector, double average, int row_count,
-                      double *result) {
+int lsVariance(double *vector, double average, int row_count, double *result) {
   *result = 0;
   if (vector == NULL) {
     printf("\tlsVariance: vector is null\n");
@@ -748,8 +747,8 @@ int lsLambdaSearchUf(float *vector, float interval_start, float interval_end,
 }
 
 int lsSmartSearch(double *vector, double interval_start, double interval_end,
-              int precision, int row_count, double *result_lambda,
-              double *result_skew) {
+                  int precision, int row_count, double *result_lambda,
+                  double *result_skew) {
   double *zws = (double *)malloc(sizeof(double) * row_count);
   if (zws == NULL) {
     printf("\tFailed to allocate memory.\n");
