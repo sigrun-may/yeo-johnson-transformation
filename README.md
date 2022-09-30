@@ -19,4 +19,4 @@ In cooperation with "Universität Bielefeld".
 
 __COMPATIBILITY__
 
-To make the c function available to python a .so file is used (.dll for windows). Said file is to be compiled by a compiler for the system the library is supposed to be used on. Example: On a x64 machine with littleEndian format and python_x64 a compiler for x64 is needed to be able to run the library on this system. A x86 compiler will run on x64 machine but the library won't be accesable by python_x64. Please consider only using compiler and python version same to your machine.
+To make the c function available to python a .so file is used (.dll for windows). Said file is to be compiled by a compiler for the system the library is supposed to be used on. Example: On a x64 machine with python_x64 a compiler for x64 is needed to be able to run the library on this system. A x86 compiler will run on x64 machine but the library won't be accesable by python_x64. Please consider only using compiler and python version same to your machine.
