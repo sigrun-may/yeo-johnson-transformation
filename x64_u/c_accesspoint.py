@@ -68,13 +68,13 @@ def yeo_johnson_smart(matrix, interval_start, interval_end, interval_parameter, 
     return yeo_johnson_output(yeo_johnson_c, matrix, interval_start, interval_end, interval_parameter, standardize, time_stamps)
 
 
-# AUSGABE
+# EXAMPLE
 
-dataFrame = pd.read_csv("./x64_u/data/generated_test.csv", header=0, low_memory=False)
-dataFrame = dataFrame.iloc[: , 1:]
-my_data = dataFrame.to_numpy()
-output = yeo_johnson_smart(my_data, -2, 2, 22, 1, 1) #matrix, interval_start, interval_end, precision, standardize, time_stamps
-print("output=\n")
-print(output)
-print("test_matrix 1\n")
-print(my_data)
+# dataFrame = pd.read_csv("./x64_u/data/generated_test.csv", header=0, low_memory=False)
+# dataFrame = dataFrame.iloc[: , 1:]
+# my_data = dataFrame.to_numpy()
+# output = yeo_johnson_smart(my_data, -2, 2, 22, 1, 1) #matrix, interval_start, interval_end, precision, standardize, time_stamps
+# print("output=\n")
+# print(output)
+# print("test_matrix 1\n")
+# print(my_data)
