@@ -75,7 +75,7 @@ def yeo_johnson_smart(matrix, interval_start, interval_end, interval_parameter, 
 def yeo_johnson_parallel(matrix, interval_start, interval_end, interval_parameter, standardize, time_stamps, thread_count):
     #accessing c functionality
     shared_library_path = "./x64/bin/comInterface.dll"
-    yeo_johnson_c = WinDLL(shared_library_path).ciParallelOperation
+    yeo_johnson_c = CDLL(shared_library_path).ciParallelOperation
     yeo_johnson_c.argtypes = [c_double, c_double, c_int, POINTER(MATRIX), c_int, c_int, c_int]
     yeo_johnson_c.restype = c_int
     # Returning matrix with adjusted values

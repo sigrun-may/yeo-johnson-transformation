@@ -73,7 +73,7 @@ def yeo_johnson_smart(matrix, interval_start, interval_end, interval_parameter, 
 def yeo_johnson_parallel(matrix, interval_start, interval_end, interval_parameter, standardize, time_stamps, thread_count):
     #accessing c functionality
     shared_library_path = "./x64_u/bin/comInterface.dll"
-    yeo_johnson_c = WinDLL(shared_library_path).ciParallelOperation
+    yeo_johnson_c = CDLL(shared_library_path).ciParallelOperation
     yeo_johnson_c.argtypes = [c_double, c_double, c_int, POINTER(MATRIX), c_int, c_int, c_int]
     yeo_johnson_c.restype = c_int
     # Returning matrix with adjusted values
@@ -83,12 +83,11 @@ def yeo_johnson_parallel(matrix, interval_start, interval_end, interval_paramete
 
 
 # EXAMPLE
-
-dataFrame = pd.read_csv("./x64_u/data/generated_test.csv", header=0, low_memory=False)
-dataFrame = dataFrame.iloc[: , 1:]
-my_data = dataFrame.to_numpy()
-output = yeo_johnson_parallel(my_data, -2, 2, 14, 1, 1, 4) #matrix, interval_start, interval_end, precision, standardize, time_stamps
-print("output=\n")
-print(output)
-print("test_matrix 1\n")
-print(my_data)
+# dataFrame = pd.read_csv("./x64_u/data/generated_test.csv", header=0, low_memory=False)
+# dataFrame = dataFrame.iloc[: , 1:]
+# my_data = dataFrame.to_numpy()
+# output = yeo_johnson_parallel(my_data, -2, 2, 14, 1, 1, 4) #matrix, interval_start, interval_end, precision, standardize, time_stamps
+# print("output=\n")
+# print(output)
+# print("test_matrix 1\n")
+# print(my_data)
