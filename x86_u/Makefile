@@ -1,7 +1,7 @@
 # -*- MakeFile -*-
 
 CC=gcc
-CFLAGS=-g -Wall -Werror
+CFLAGS=-g -Wall -Werror -pthread -lpthread -static
 SRC=src
 OBJ=obj
 BINDIR=bin

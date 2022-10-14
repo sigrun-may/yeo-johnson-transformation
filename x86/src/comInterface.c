@@ -24,12 +24,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 #include "include/comInterface.h"
 #include "include/lambdaSearch.h"
 #include "include/timeStamps.h"
 #include "include/vectorImports.h"
 #include "include/yeoJohnson.h"
+
+typedef struct _TBODYF {
+  float interval_start;
+  float interval_end;
+  int precision;
+  MATRIXF *input_matrix;
+  int thread_count;
+  int thread_number;
+} TBODYF;
 
 
 /*****************************************************************************
@@ -52,6 +62,26 @@ static int ci_do_standardize(MATRIXF *input_matrix) {
     ci_standardize(*(input_matrix->data + i), input_matrix->rows);
   }
   return 0;
+}
+
+static void *threaded_operation(void *args) {
+  TBODYF *tb = (TBODYF *) args;
+  int err_num = 0;
+  for (int i = tb->thread_number; i < tb->input_matrix->cols; i+= tb->thread_count) {
+    err_num = lsSmartSearch(*(tb->input_matrix->data + i), tb->interval_start, tb->interval_end, tb->precision, tb->input_matrix->rows, &*(tb->input_matrix->lambda + i), &*(tb->input_matrix->skew + i));
+    if (err_num != 0) {
+      printf("abort on lambda smart search\n");
+    } else {
+      err_num = yjTransformBy(&*(tb->input_matrix->data + i),
+                              *(tb->input_matrix->lambda + i), tb->input_matrix->rows);
+      if (err_num != 0) {
+        printf("abort on transformBy\n");
+      }
+    }
+  }
+  free(tb);
+  pthread_exit(NULL);
+  return NULL;
 }
 
 /*****************************************************************************
@@ -173,6 +203,48 @@ int ciSmartOperation(float interval_start, float interval_end, int precision,
     double dt = 0;  // todo maybe float
     tsGetTime(&dt);
     printf("Time elapsed during transformation= %f s", dt);
+  }
+  return 0;
+}
+
+int ciParallelOperation(float interval_start, float interval_end,
+                        int precision, MATRIXF *input_matrix, BOOL standardize,
+                        BOOL time_stamps, int thread_count) {
+  //int err_num = 0;
+  if (time_stamps) {
+    // Starting Timer
+    tsSetTimer();
+  }
+  // Thread instantiation
+  pthread_t *th = malloc(sizeof(pthread_t) * thread_count);
+  if (th == NULL) {
+    printf("Not enough memory for thread creation\n");
+    return -1;
+  }
+  for (int i = 0; i < thread_count; i++) {
+    TBODYF *tb = malloc(sizeof(TBODYF));
+    tb->input_matrix = input_matrix;
+    tb->interval_start = interval_start;
+    tb->interval_end = interval_end;
+    tb->precision =precision;
+    tb->thread_count = thread_count;
+    tb->thread_number = i;
+    pthread_create(&th[i], NULL, &threaded_operation, tb);
+  }
+  for (int i = 0; i < thread_count; i++) {
+    pthread_join(th[i], NULL);
+  }
+  if (standardize) {
+    // standardize vector list
+    ci_do_standardize(input_matrix);
+  }
+  if (time_stamps) {
+    // Stoping Timer
+    tsStopTimer();
+    // printing result time
+    double dt = 0;
+    tsGetTime(&dt);
+    printf("Time elapsed during transformation= %f s\n", dt);
   }
   return 0;
 }

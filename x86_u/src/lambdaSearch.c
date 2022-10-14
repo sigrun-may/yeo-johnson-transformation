@@ -188,7 +188,6 @@ int lsLambdaSearch(float *vector, float interval_start, float interval_end,
   }
   memset(zws, 0, sizeof(float) * row_count);
   *result_lambda = interval_start;
-  buildBoundaryBox(interval_start, interval_end);
   for (float lambda_i = interval_start; lambda_i <= interval_end;
        lambda_i += interval_step) {
     for (int i = 0; i < row_count; i++) {
@@ -212,7 +211,6 @@ int lsSmartSearch(float *vector, float interval_start, float interval_end,
     printf("\tFailed to allocate memory.\n");
     return -1;
   }
-  buildBoundaryBox(interval_start, interval_end);
   float interval_step = 1;
   for (int s = 0; s <= precision; s++) {
     memset(zws, 0, sizeof(float) * row_count);

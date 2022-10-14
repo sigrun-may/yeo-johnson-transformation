@@ -27,4 +27,8 @@ int ciLambdaOperation(float interval_start, float interval_end,
 int ciSmartOperation(float interval_start, float interval_end, int precision,
                      MATRIXF *input_matrix, BOOL standardize, BOOL time_stamps);
 
+int ciParallelOperation(float interval_start, float interval_end,
+                        int precision, MATRIXF *input_matrix, BOOL standardize,
+                        BOOL time_stamps, int thread_count);
+
 #endif /* COMINTERFACE_H */

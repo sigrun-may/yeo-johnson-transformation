@@ -41,7 +41,7 @@
  *                               GLOBALS
  *****************************************************************************/
 
-static const double g_maxHighDouble = (double)0x7FFFFFFFFFFFFF;
+static const double g_maxHighDouble = __DBL_MAX__;
 // static const double g_maxLowDouble = (double)0x80000000000000;
 //static const double g_maxHighFloat = (float)0x7FFFFFFF;
 // static const double g_maxLowFloat = (float)0x80000000;
