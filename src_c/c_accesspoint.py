@@ -144,14 +144,13 @@ def yeo_johnson(
 
 
 # EXAMPLE
-
-dataFrame = pd.read_csv("../x86/data/generated_test.csv", header=0, low_memory=False)
+dataFrame = pd.read_csv("../x64/data/generated_test.csv", header=0, low_memory=False)
 dataFrame = dataFrame.iloc[:, 1:]
 my_data = dataFrame.to_numpy()
 print(my_data.shape)
 output = yeo_johnson(
-    yeo_johnson_c=CDLL("../x86/bin/comInterface.so").ciParallelOperation,
-    c_data_type=ctypes.c_float,
+    yeo_johnson_c=CDLL("../x64/bin/comInterface.dll").ciParallelOperation,
+    c_data_type=ctypes.c_double,
     matrix=my_data,
     interval_start=-2,
     interval_end=2,
