@@ -5,7 +5,7 @@
  *          Utilities to import vector data from .csv and python dataframe.
  *
  * PUBLIC FUNCTIONS :
- *
+ * int importVectorTableFromCsv(char *file_path, MATRIXF **vector_list)
  *
  * NOTES    :
  *
@@ -108,14 +108,14 @@ static int fillMatrixFromCsv(FILE *file, float ***matrix, int row_count,
   int row_counter = 0;
   int column_counter = 0;
   char c[1] = {' '};
-  c[0] = (char) fgetc(file);
-  while ((int) c[0] != EOF) {
-    if ((int) c[0] == SEMICOLON) {
+  c[0] = (char)fgetc(file);
+  while ((int)c[0] != EOF) {
+    if ((int)c[0] == SEMICOLON) {
       float parameter = strtof(line, NULL);
       *(*((*matrix) + column_counter) + row_counter) = parameter;
       line[0] = '\0';
       column_counter++;
-    } else if ((int) c[0] == EOL) {
+    } else if ((int)c[0] == EOL) {
       float parameter = strtof(line, NULL);
       *(*((*matrix) + column_counter) + row_counter) = parameter;
       line[0] = '\0';
@@ -125,7 +125,7 @@ static int fillMatrixFromCsv(FILE *file, float ***matrix, int row_count,
     } else {
       strcat(line, c);
     }
-    c[0] = (char) fgetc(file);
+    c[0] = (char)fgetc(file);
   }
   rewind(file);
   free(line);
@@ -160,7 +160,8 @@ int importVectorTableFromCsv(char *file_path, MATRIXF **vector_list) {
     printf("\t\"%s\" does not exist in data directory.\n", file_path);
     return -3;
   }
-  errnum = getMatrixSizeFromCsv(file, &(*vector_list)->cols, &(*vector_list)->rows);
+  errnum =
+      getMatrixSizeFromCsv(file, &(*vector_list)->cols, &(*vector_list)->rows);
   if (errnum != 0) {
     printf("\texception while getting dimensions.\n");
     return -4;

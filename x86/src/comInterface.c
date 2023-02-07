@@ -2,10 +2,16 @@
  * FILENAME : comInterface.c
  *
  * DESCRIPTION  :
- *
+ * functional interface for construction of higher-order functions
  *
  * PUBLIC FUNCTIONS :
- *
+ * int ciLambdaOperationOnMatrixFromFileS(file_path, interval_start,
+ *interval_end, interval_step, return_matrix, standardize, time_stamps) int
+ *ciLambdaOperation(interval_start, interval_end, interval_step, input_matrix,
+ *standardize, time_stamps) int ciSmartOperation(interval_start, interval_end,
+ *precision, input_matrix, standardize, time_stamps) int
+ *ciParallelOperation(interval_start, interval_end, precision, input_matrix,
+ *standardize, time_stamps, thread_count)
  *
  * NOTES    :
  *
@@ -22,9 +28,10 @@
  *                               INCLUDES
  *****************************************************************************/
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
+
 
 #include "include/comInterface.h"
 #include "include/lambdaSearch.h"
@@ -41,11 +48,17 @@ typedef struct _TBODYF {
   int thread_number;
 } TBODYF;
 
-
 /*****************************************************************************
  *                           PRIVATE FUNCTIONS
  *****************************************************************************/
 
+/**
+ * @brief overwrites input vector with standardized vector of input
+ *
+ * @param vector input vector
+ * @param rows row count of vector
+ * @return int error return code
+ */
 static int ci_standardize(float *vector, int rows) {
   float avg = 0;
   float sd = 0;
@@ -57,6 +70,12 @@ static int ci_standardize(float *vector, int rows) {
   return 0;
 }
 
+/**
+ * @brief overwrites an array with vectors with standardized vectors of input
+ *
+ * @param input_matrix array of vectors
+ * @return int error return code
+ */
 static int ci_do_standardize(MATRIXF *input_matrix) {
   for (int i = 0; i < input_matrix->cols; i++) {
     ci_standardize(*(input_matrix->data + i), input_matrix->rows);
@@ -64,16 +83,29 @@ static int ci_do_standardize(MATRIXF *input_matrix) {
   return 0;
 }
 
+/**
+ * @brief thread entry function, thread executes function after creation for
+ * ciParallelOperation matrix(array of vectors) is divided into modulo-classes,
+ * each is handled by one thread
+ *
+ * @param args necessary information for calculation
+ * @return void* pointer to thread information
+ */
 static void *threaded_operation(void *args) {
-  TBODYF *tb = (TBODYF *) args;
+  TBODYF *tb = (TBODYF *)args;
   int err_num = 0;
-  for (int i = tb->thread_number; i < tb->input_matrix->cols; i+= tb->thread_count) {
-    err_num = lsSmartSearch(*(tb->input_matrix->data + i), tb->interval_start, tb->interval_end, tb->precision, tb->input_matrix->rows, &*(tb->input_matrix->lambda + i), &*(tb->input_matrix->skew + i));
+  for (int i = tb->thread_number; i < tb->input_matrix->cols;
+       i += tb->thread_count) {
+    err_num = lsSmartSearch(
+        *(tb->input_matrix->data + i), tb->interval_start, tb->interval_end,
+        tb->precision, tb->input_matrix->rows, &*(tb->input_matrix->lambda + i),
+        &*(tb->input_matrix->skew + i));
     if (err_num != 0) {
       printf("abort on lambda smart search\n");
     } else {
       err_num = yjTransformBy(&*(tb->input_matrix->data + i),
-                              *(tb->input_matrix->lambda + i), tb->input_matrix->rows);
+                              *(tb->input_matrix->lambda + i),
+                              tb->input_matrix->rows);
       if (err_num != 0) {
         printf("abort on transformBy\n");
       }
@@ -88,11 +120,22 @@ static void *threaded_operation(void *args) {
  *                           PUBLIC FUNCTIONS
  *****************************************************************************/
 
+/**
+ * @brief calculates lambda and skew for the matrix contained inside a file
+ *
+ * @param file_path path to file (.csv)
+ * @param interval_start search interval start
+ * @param interval_end search interval end
+ * @param interval_step incrementation step
+ * @param return_matrix matrix with lambda and skew vector
+ * @param standardize bool if standardization is wished
+ * @param time_stamps bool if time for calculation should be measured
+ * @return int return error code
+ */
 int ciLambdaOperationOnMatrixFromFileS(char *file_path, float interval_start,
-                                       float interval_end,
-                                       float interval_step,
-                                       MATRIXF **return_matrix, BOOL standardize,
-                                       BOOL time_stamps) {
+                                       float interval_end, float interval_step,
+                                       MATRIXF **return_matrix,
+                                       BOOL standardize, BOOL time_stamps) {
   int err_num = 0;
   *(return_matrix) = (MATRIXF *)malloc(sizeof(MATRIXF));
   if (return_matrix == NULL) {
@@ -125,13 +168,24 @@ int ciLambdaOperationOnMatrixFromFileS(char *file_path, float interval_start,
     // Stoping Timer
     tsStopTimer();
     // printing result time
-    double dt = 0;  // todo maybe float
+    double dt = 0; // todo maybe float
     tsGetTime(&dt);
     printf("Time elapsed during transformation= %f s", dt);
   }
   return 0;
 }
 
+/**
+ * @brief calculates lambda and skew for the input matrix
+ *
+ * @param interval_start search interval start
+ * @param interval_end search interval end
+ * @param interval_step incrementation step
+ * @param input_matrix matrix to calculate lambas and skew
+ * @param standardize bool if standardization is wished
+ * @param time_stamps bool if time for calculation should be measured
+ * @return int return error code
+ */
 int ciLambdaOperation(float interval_start, float interval_end,
                       float interval_step, MATRIXF *input_matrix,
                       BOOL standardize, BOOL time_stamps) {
@@ -163,15 +217,28 @@ int ciLambdaOperation(float interval_start, float interval_end,
     // Stoping Timer
     tsStopTimer();
     // printing result time
-    double dt = 0;  // todo maybe float
+    double dt = 0; // todo maybe float
     tsGetTime(&dt);
     printf("Time elapsed during transformation= %f s", dt);
   }
   return 0;
 }
 
+/**
+ * @brief calculates lambda and skew for the input matrix, different search
+ * algorithm (scanning with defined precision) #can exit defined interval
+ *
+ * @param interval_start start of interval
+ * @param interval_end end of interval
+ * @param precision scanning precision
+ * @param input_matrix array of vectors
+ * @param standardize bool if standardization is wished
+ * @param time_stamps bool if time for calculation should be measured
+ * @return int error return code
+ */
 int ciSmartOperation(float interval_start, float interval_end, int precision,
-                     MATRIXF *input_matrix, BOOL standardize, BOOL time_stamps) {
+                     MATRIXF *input_matrix, BOOL standardize,
+                     BOOL time_stamps) {
   int err_num = 0;
   if (time_stamps) {
     // Starting Timer
@@ -200,17 +267,31 @@ int ciSmartOperation(float interval_start, float interval_end, int precision,
     // Stoping Timer
     tsStopTimer();
     // printing result time
-    double dt = 0;  // todo maybe float
+    double dt = 0; // todo maybe float
     tsGetTime(&dt);
     printf("Time elapsed during transformation= %f s", dt);
   }
   return 0;
 }
 
-int ciParallelOperation(float interval_start, float interval_end,
-                        int precision, MATRIXF *input_matrix, BOOL standardize,
+/**
+ * @brief calculates lambda and skew for the input matrix, different search
+ * algorithm (scanning with defined precision) #can exit defined interval #multi
+ * thread
+ *
+ * @param interval_start start of interval
+ * @param interval_end end of interval
+ * @param precision scanning precision
+ * @param input_matrix array of vectors
+ * @param standardize bool if standardization is wished
+ * @param time_stamps bool if time for calculation should be measured
+ * @param thread_count count of thread to be created
+ * @return int error return code
+ */
+int ciParallelOperation(float interval_start, float interval_end, int precision,
+                        MATRIXF *input_matrix, BOOL standardize,
                         BOOL time_stamps, int thread_count) {
-  //int err_num = 0;
+  // int err_num = 0;
   if (time_stamps) {
     // Starting Timer
     tsSetTimer();
@@ -226,7 +307,7 @@ int ciParallelOperation(float interval_start, float interval_end,
     tb->input_matrix = input_matrix;
     tb->interval_start = interval_start;
     tb->interval_end = interval_end;
-    tb->precision =precision;
+    tb->precision = precision;
     tb->thread_count = thread_count;
     tb->thread_number = i;
     pthread_create(&th[i], NULL, &threaded_operation, tb);

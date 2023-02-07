@@ -41,10 +41,7 @@
  *                               GLOBALS
  *****************************************************************************/
 
-//static const double g_maxHighDouble = (double)0x7FFFFFFFFFFFFF;
-// static const double g_maxLowDouble = (double)0x80000000000000;
 static const double g_maxHighFloat = __FLT_MAX__;
-// static const double g_maxLowFloat = (float)0x80000000;
 
 /*****************************************************************************
  *                           PRIVATE FUNCTIONS
@@ -127,8 +124,8 @@ int lsVariance(float *vector, float average, int row_count, float *result) {
  * @param result skew of the given vector
  * @return int error return code
  */
-static int lsSkew(float *vector, float average, float variance,
-                  int row_count, float *result) {
+static int lsSkew(float *vector, float average, float variance, int row_count,
+                  float *result) {
   *result = 0;
   if (vector == NULL) {
     printf("\tlsSkew: vector is null\n");
@@ -272,6 +269,19 @@ int lsLambdaSearch(float *vector, float interval_start, float interval_end,
   return 0;
 }
 
+/**
+ * @brief Searching a lambda resulting in the skew closest to zero by scanning
+ * with precision instead of incremental steps
+ *
+ * @param vector input vector
+ * @param interval_start start of interval
+ * @param interval_end end of interval
+ * @param precision scanning precision
+ * @param row_count row count of vector
+ * @param result_lambda lambda with skew closest to 0
+ * @param result_skew resulting skew with calculated lambda
+ * @return int error return code
+ */
 int lsSmartSearch(float *vector, float interval_start, float interval_end,
                   int precision, int row_count, float *result_lambda,
                   float *result_skew) {

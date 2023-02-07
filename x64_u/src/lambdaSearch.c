@@ -42,9 +42,6 @@
  *****************************************************************************/
 
 static const double g_maxHighDouble = (double)0x7FFFFFFFFFFFFF;
-// static const double g_maxLowDouble = (double)0x80000000000000;
-// static const double g_maxHighFloat = (float)0x7FFFFFFF;
-// static const double g_maxLowFloat = (float)0x80000000;
 
 /*****************************************************************************
  *                           PRIVATE FUNCTIONS
@@ -203,6 +200,19 @@ int lsLambdaSearch(double *vector, double interval_start, double interval_end,
   return 0;
 }
 
+/**
+ * @brief Searching a lambda resulting in the skew closest to zero by scanning
+ * with precision instead of incremental steps
+ *
+ * @param vector input vector
+ * @param interval_start start of interval
+ * @param interval_end end of interval
+ * @param precision scanning precision
+ * @param row_count row count of vector
+ * @param result_lambda lambda with skew closest to 0
+ * @param result_skew resulting skew with calculated lambda
+ * @return int error return code
+ */
 int lsSmartSearch(double *vector, double interval_start, double interval_end,
                   int precision, int row_count, double *result_lambda,
                   double *result_skew) {

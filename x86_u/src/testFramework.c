@@ -5,7 +5,12 @@
  *
  *
  * PUBLIC FUNCTIONS :
- *
+ * int assert_int_equals(int a, int b, char *desc)
+ * int assert_double_equals(double a, double b, char *desc)
+ * int assert_float_equals(float a, float b, char *desc)
+ * int assert_string_equals(char *a, char *b, char *desc)
+ * int is_in_bound(double a, double origin, double range, char *desc)
+ * int assert_not_null(void *ptr, char *desc)
  *
  * NOTES    :
  *
@@ -39,7 +44,7 @@
 
 /**
  * @brief checks if a is equal to b, prints a describtion if not
- * 
+ *
  * @param a first integer
  * @param b second integer
  * @param desc describtion to be printed
@@ -56,7 +61,7 @@ int assert_int_equals(int a, int b, char *desc) {
 
 /**
  * @brief checks if a is equal to b, prints a describtion if not
- * 
+ *
  * @param a first integer
  * @param b second integer
  * @param desc describtion to be printed
@@ -73,11 +78,11 @@ int assert_double_equals(double a, double b, char *desc) {
 
 /**
  * @brief checks if a is equal to b, prints a describtion if not
- * 
+ *
  * @param a first integer
  * @param b second integer
  * @param desc describtion to be printed
- * @return int error return code 
+ * @return int error return code
  */
 int assert_float_equals(float a, float b, char *desc) {
   if (a == b) {
@@ -90,11 +95,11 @@ int assert_float_equals(float a, float b, char *desc) {
 
 /**
  * @brief checks if a is equal to b, prints a describtion if not
- * 
+ *
  * @param a first integer
  * @param b second integer
  * @param desc describtion to be printed
- * @return int error return code 
+ * @return int error return code
  */
 int assert_string_equals(char *a, char *b, char *desc) {
   if (strcmp(a, b) == 0) {
@@ -106,7 +111,7 @@ int assert_string_equals(char *a, char *b, char *desc) {
 
 /**
  * @brief checks if a is a given range around the origin
- * 
+ *
  * @param a value
  * @param origin center point
  * @param range radius around origin
@@ -123,10 +128,10 @@ int is_in_bound(double a, double origin, double range, char *desc) {
 
 /**
  * @brief checks if a pointer is NOT null
- * 
+ *
  * @param ptr pointer
- * @param desc decribtion 
- * @return int 
+ * @param desc decribtion
+ * @return int
  */
 int assert_not_null(void *ptr, char *desc) {
   if (ptr != NULL) {

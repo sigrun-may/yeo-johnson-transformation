@@ -6,8 +6,8 @@
  *          and all coherent sub functions.
  *
  * PUBLIC FUNCTIONS :
- *          int yjCalculation( double, double, double * )
- *          int yjCalculationf( float, float, float * )
+ *          int yjCalculation(double y, double lambda, double *result)
+ *          int yjTransformBy(double **vector, double lambda, int rows)
  *
  * NOTES    :
  *          These functions are used to calculate a new distribution for
@@ -40,9 +40,9 @@
  *                               CONSTANTS
  *****************************************************************************/
 
-//static const double g_max_high_double = __DBL_MAX__;
-//static const double g_max_high_float = __FLT_MAX__;
-//static const double g_max_low_float = -__FLT_MAX__;
+// static const double g_max_high_double = __DBL_MAX__;
+// static const double g_max_high_float = __FLT_MAX__;
+// static const double g_max_low_float = -__FLT_MAX__;
 
 /*****************************************************************************
  *                                GLOBALS

@@ -21,18 +21,19 @@
 /*****************************************************************************
  *                               INCLUDES
  *****************************************************************************/
-#include "include/testFramework.h"
 #include "include/lambdaSearch.h"
+#include "include/testFramework.h"
 #include "include/vectorImports.h"
 #include "include/yeoJohnson.h"
+
 
 /*****************************************************************************
  *                                TESTS
  *****************************************************************************/
 #ifdef UNIT_TEST
 /**
- * @brief super test for yeoJohnson.c, tests all functions inside yeoJohnson.c 
- * 
+ * @brief super test for yeoJohnson.c, tests all functions inside yeoJohnson.c
+ *
  */
 void test_super_yj(void) {
   test_buildBoundaryBox();
@@ -65,7 +66,7 @@ void test_super_yj(void) {
 
 /**
  * @brief super test for vectorImports.c, tests all functions in vectorImports.c
- * 
+ *
  */
 void test_super_vi(void) {
   test_getMatrixSizeFromCsv();
@@ -77,7 +78,7 @@ void test_super_vi(void) {
 
 /**
  * @brief super test for lambdaSearch.c, tests all functions in lambdaSearch.c
- * 
+ *
  */
 void test_super_ls(void) {
   test_lsAverage();

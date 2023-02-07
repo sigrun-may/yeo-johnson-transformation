@@ -6,8 +6,8 @@
  *          and all coherent sub functions.
  *
  * PUBLIC FUNCTIONS :
- *          int yjCalculation( double, double, double * )
- *          int yjCalculationf( float, float, float * )
+ *          int yjCalculation(double y, double lambda, double *result)
+ *          int yjTransformBy(double **vector, double lambda, int rows)
  *
  * NOTES    :
  *          These functions are used to calculate a new distribution for
@@ -40,19 +40,19 @@
  *                               CONSTANTS
  *****************************************************************************/
 
-//static const double g_max_high_double = (double)0x7FFFFFFFFFFFFF;
-//static const double g_max_low_double = (double)0x80000000000000;
-//static const double g_max_high_float = (float)0x7FFFFFFF;
-//static const double g_max_low_float = (float)0x80000000;
+// static const double g_max_high_double = (double)0x7FFFFFFFFFFFFF;
+// static const double g_max_low_double = (double)0x80000000000000;
+// static const double g_max_high_float = (float)0x7FFFFFFF;
+// static const double g_max_low_float = (float)0x80000000;
 
 /*****************************************************************************
  *                                GLOBALS
  *****************************************************************************/
 // flags if boundary boxes have been set
-//static int bB_set = 0;
+// static int bB_set = 0;
 // boundary boxes
-//static boundaryBox bB_yj1;
-//static boundaryBox bB_yj3;
+// static boundaryBox bB_yj1;
+// static boundaryBox bB_yj3;
 
 /*****************************************************************************
  *                           PRIVATE FUNCTIONS

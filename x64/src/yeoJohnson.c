@@ -6,8 +6,9 @@
  *          and all coherent sub functions.
  *
  * PUBLIC FUNCTIONS :
- *          int yjCalculation( double, double, double * )
- *          int yjCalculationf( float, float, float * )
+ *          void buildBoundaryBox(double lower_lambda, double upper_lambda)
+ *          int yjCalculation(double y, double lambda, double *result)
+ *          int yjTransformBy(double **vector, double lambda, int rows)
  *
  * NOTES    :
  *          These functions are used to calculate a new distribution for
@@ -42,8 +43,8 @@
 
 static const double g_max_high_double = (double)0x7FFFFFFFFFFFFF;
 static const double g_max_low_double = (double)0x80000000000000;
-//static const double g_max_high_float = (float)0x7FFFFFFF;
-//static const double g_max_low_float = (float)0x80000000;
+// static const double g_max_high_float = (float)0x7FFFFFFF;
+// static const double g_max_low_float = (float)0x80000000;
 
 /*****************************************************************************
  *                                GLOBALS

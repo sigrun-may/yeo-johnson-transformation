@@ -5,6 +5,8 @@
  *          Functions for time measurement.
  *
  * PUBLIC FUNCTIONS :
+ * int tsSetTimer()
+ * int tsStopTimer()
  *
  * NOTES    :
  *
