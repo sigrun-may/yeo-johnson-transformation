@@ -1,9 +1,13 @@
+/****************************************************************
+* Copyright (c) 2023 Jerome Brenig, Sigrun May
+* Ostfalia Hochschule für angewandte Wissenschaften
+*
+* This software is distributed under the terms of the MIT license
+* which is available at https://opensource.org/licenses/MIT
+* /
+
 /*
  *   comInterface.h
- *
- *   created on: 14.09.2022
- *   author: jbrenig
- *
  */
 
 #ifndef COMINTERFACE_H

@@ -1,9 +1,13 @@
+/****************************************************************
+* Copyright (c) 2023 Jerome Brenig, Sigrun May
+* Ostfalia Hochschule für angewandte Wissenschaften
+*
+* This software is distributed under the terms of the MIT license
+* which is available at https://opensource.org/licenses/MIT
+* /
+
 /*
  *   superTest.h
- *
- *   created on 19.09.2022
- *   author: jbrenig
- *
  */
 
 #ifndef SUPERTEST_H

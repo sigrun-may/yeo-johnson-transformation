@@ -1,9 +1,13 @@
+/****************************************************************
+* Copyright (c) 2023 Jerome Brenig, Sigrun May
+* Ostfalia Hochschule für angewandte Wissenschaften
+*
+* This software is distributed under the terms of the MIT license
+* which is available at https://opensource.org/licenses/MIT
+* /
+
 /*
  *   testFramework.h
- *
- *   created on 12.09.2022
- *   author: jbrenig
- *
  */
 
 #ifndef TESTFRAMEWORK_H

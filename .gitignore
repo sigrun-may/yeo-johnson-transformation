@@ -2,3 +2,5 @@
 *.code-workspace
 obj/*
 bin/*
+/.idea
+.idea
