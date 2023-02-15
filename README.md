@@ -26,8 +26,8 @@ Please consider only using compiler and Python version suitable for your machine
 <br>
 <br>
 Compile .so / .dll files:<br>
-make dir<br>
-make all<br>
+1. make dir<br>
+2. make all<br>
 
 
 ## Licensing
@@ -36,4 +36,4 @@ Copyright (c) 2023 Jerome Brenig, Swen Biemer, Sigrun May, Ostfalia Hochschule f
 
 Licensed under the **MIT License** (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License by reviewing the file
-[LICENSE](https://github.com/sigrun-may/artificial-data-generator/blob/main/LICENSE) in the repository.
+[LICENSE](https://github.com/sigrun-may/yeo-johnson-transformation/blob/main/LICENSE) in the repository.
