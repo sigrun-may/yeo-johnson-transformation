@@ -1,6 +1,6 @@
 from collections import namedtuple
 from ctypes import *
-
+import platform
 import numpy as np
 
 
@@ -31,20 +31,18 @@ def _construct_c_matrix(matrix, c_data_type):
             data_row[j] = c_data_type(value)
         data_matrix[i] = data_row
     #  transforming matrix into c format
-    return MATRIX(
-        row_dimension, column_dimension, data_matrix, ptr_lambdas, ptr_skews
-    )
+    return MATRIX(row_dimension, column_dimension, data_matrix, ptr_lambdas, ptr_skews)
 
 
 def _yeo_johnson_output(
-        yeo_johnson_c,
-        matrix,
-        interval_start,
-        interval_end,
-        interval_parameter,
-        standardize,
-        time_stamps,
-        thread_count,
+    yeo_johnson_c,
+    matrix,
+    interval_start,
+    interval_end,
+    interval_parameter,
+    standardize,
+    time_stamps,
+    thread_count,
 ):
     #  constructing c struct
     temp_matrix = _construct_c_matrix(matrix, c_double)
@@ -75,7 +73,7 @@ def _yeo_johnson_output(
         for j in range(temp_matrix.rows):
             matrix[j][i] = temp_matrix.data[i][j]
 
-    Result = namedtuple('Result', 'matrix lambdas skews')
+    Result = namedtuple("Result", "matrix lambdas skews")
 
     lambdas = []
     skews = []
@@ -89,16 +87,24 @@ def _yeo_johnson_output(
 
 
 def yeo_johnson(
-        matrix,
-        interval_start,
-        interval_end,
-        interval_parameter,
-        standardize,
-        time_stamps,
-        thread_count,
+    matrix,
+    interval_start,
+    interval_end,
+    interval_parameter,
+    standardize,
+    time_stamps,
+    thread_count,
 ):
     # accessing c functionality
-    yeo_johnson_c = CDLL("../x64/bin/comInterface.so").ciParallelOperation
+    os = platform.system()
+    if os == 'Linux':
+        yeo_johnson_c = CDLL("../x64/bin/comInterface.so").ciParallelOperation
+    elif os == 'Windows':
+        yeo_johnson_c = CDLL("../x64/bin/comInterface.dll").ciParallelOperation
+    else:
+        print("Please generate your own library and add the link here.")
+        raise EnvironmentError("Only Linux and Windows is supported.")
+
     yeo_johnson_c.argtypes = [
         c_double,
         c_double,
