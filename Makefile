@@ -29,6 +29,7 @@ OBJ64u	= 	x64_u/obj
 OBJ32	=	x86/obj
 OBJ32u	=	x86_u/obj
 
+
 SRCS64=$(wildcard $(SRC64)/*.c)
 OBJS64=$(patsubst $(SRC64)/%.c, $(OBJ64)/%.o, $(SRCS64))
 
@@ -46,7 +47,19 @@ SHARE64u	=	x64_u/$(SHARE)
 SHARE32		=	x86/$(SHARE)
 SHARE32u	=	x86_u/$(SHARE)
 
-all:$(SHARE64) $(SHARE64u) $(SHARE32) $(SHARE32u)
+
+dir: 
+	mkdir -p x64/obj
+	mkdir -p x64_u/obj
+	mkdir -p x86/obj
+	mkdir -p x86_u/obj
+	mkdir -p x86_u/bin
+	mkdir -p x86/bin
+	mkdir -p x64_u/bin
+	mkdir -p x64/bin
+
+all:$(dir) $(SHARE64) $(SHARE64u) $(SHARE32) $(SHARE32u)
+	
 
 $(SHARE64): $(OBJS64)
 	$(CC) -fPIC -shared $(CFLAGS) $(OBJS64) -o $@

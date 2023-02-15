@@ -2,7 +2,7 @@ import ctypes
 from ctypes import *
 
 import numpy as np
-import pandas as pd
+from collections import namedtuple
 
 
 class MATRIX(Structure):
@@ -43,21 +43,25 @@ def _construct_c_matrix(matrix, c_data_type):
         data_matrix[i] = data_row
     #  transforming matrix into c format
     if c_data_type is ctypes.c_double:
-        return MATRIX(row_dimension, column_dimension, data_matrix, ptr_lambdas, ptr_skews)
+        return MATRIX(
+            row_dimension, column_dimension, data_matrix, ptr_lambdas, ptr_skews
+        )
     else:
-        return MATRIXF(row_dimension, column_dimension, data_matrix, ptr_lambdas, ptr_skews)
+        return MATRIXF(
+            row_dimension, column_dimension, data_matrix, ptr_lambdas, ptr_skews
+        )
 
 
 def _yeo_johnson_output(
-        yeo_johnson_c,
-        c_data_type,
-        matrix,
-        interval_start,
-        interval_end,
-        interval_parameter,
-        standardize,
-        time_stamps,
-        thread_count,
+    yeo_johnson_c,
+    c_data_type,
+    matrix,
+    interval_start,
+    interval_end,
+    interval_parameter,
+    standardize,
+    time_stamps,
+    thread_count,
 ):
     #  constructing c struct
     temp_matrix = _construct_c_matrix(matrix, c_data_type)
@@ -85,26 +89,39 @@ def _yeo_johnson_output(
     for i in range(temp_matrix.cols):
         for j in range(temp_matrix.rows):
             matrix[j][i] = temp_matrix.data[i][j]
+
+    Result = namedtuple('Result', 'matrix lambdas skew')
+
     # returning lambdas and skew
     result = np.zeros(shape=(temp_matrix.cols, 2))
+
+    lambdas = []
+    skew = []
     for i in range(temp_matrix.cols):
-        lambdas = temp_matrix.lambdas[i]
-        result[i][0] = lambdas
-        skew = temp_matrix.skew[i]
-        result[i][1] = skew
-    return result
+        _lambdas = temp_matrix.lambdas[i]
+        result[i][0] = _lambdas
+        _skew = temp_matrix.skew[i]
+        result[i][1] = _skew
+
+    for i in range(temp_matrix.cols):
+        lambdas.append(temp_matrix.lambdas[i])
+        skew.append(temp_matrix.skew[i])
+
+    typed_result = Result(matrix=matrix, lambdas=lambdas, skew=skew)
+
+    return typed_result
 
 
 def yeo_johnson(
-        yeo_johnson_c,
-        c_data_type,
-        matrix,
-        interval_start,
-        interval_end,
-        interval_parameter,
-        standardize,
-        time_stamps,
-        thread_count,
+    yeo_johnson_c,
+    c_data_type,
+    matrix,
+    interval_start,
+    interval_end,
+    interval_parameter,
+    standardize,
+    time_stamps,
+    thread_count,
 ):
     # accessing c functionality
     if c_data_type is ctypes.c_double:
@@ -142,35 +159,3 @@ def yeo_johnson(
         thread_count,
     )
 
-
-# EXAMPLE
-dataFrame = pd.read_csv("../x64/data/generated_test.csv", header=0, low_memory=False)
-dataFrame = dataFrame.iloc[:, 1:]
-my_data = dataFrame.to_numpy()
-print(my_data.shape)
-output = yeo_johnson(
-    yeo_johnson_c=CDLL("../x64/bin/comInterface.dll").ciParallelOperation,
-    c_data_type=ctypes.c_double,
-    matrix=my_data,
-    interval_start=-2,
-    interval_end=2,
-    interval_parameter=14,
-    standardize=1,
-    time_stamps=1,
-    thread_count=4,
-)  # matrix, interval_start, interval_end, precision, standardize, time_stamps
-print("output=\n")
-print(output)
-print("test_matrix 1\n")
-print(my_data)
-
-# # transform and standardize data
-# power_transformer = PowerTransformer(
-#     copy=True, method="yeo-johnson", standardize=True
-# )
-# start = time()
-# train = power_transformer.fit_transform(my_data)
-# print("duration:", timedelta(seconds=time() - start))
-
-# c_function = CDLL("./x64/bin/comInterface.dll")
-# res = c_function.ciParallelOperation

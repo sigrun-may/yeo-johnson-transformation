@@ -24,6 +24,12 @@ Example: On a x64 machine with python_x64 a compiler for x64 is needed to be abl
 An x86 compiler will run on x64 machine but the library won't be accessible by python_x64. 
 Please consider only using compiler and Python version suitable for your machine.
 
+make dir
+make all
+
+Parameter *.so
+Parameter *.dll
+
 
 ## Licensing
 
