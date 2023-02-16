@@ -247,11 +247,12 @@ int lsLambdaSearch(double *vector, double interval_start, double interval_end,
         printf("\tFailed to allocate memory.\n");
         return -1;
     }
-    memset(zws, 0, sizeof(double) * row_count);
+    memset(zws, 0, sizeof(double) * row_count); // is unsecure -> does not matter is overwritten in yjCalculation
     *result_lambda = interval_start;
     buildBoundaryBox(interval_start, interval_end);
-    for (double lambda_i = interval_start; lambda_i <= interval_end;
-         lambda_i += interval_step) {
+    int steps = ceil((interval_end - interval_start) / interval_step);
+    for (int i = 0; i <= steps; i++) {
+        double lambda_i = interval_start + (interval_step * i);
         for (int i = 0; i < row_count; i++) {
             if (yjCalculation(*(vector + i), lambda_i, zws + i) != 0) {
                 printf("\texception occured during yeoJohnson\n");
@@ -298,11 +299,12 @@ int lsSmartSearch(double *vector, double interval_start, double interval_end,
     buildBoundaryBox(interval_start, interval_end);
     double interval_step = 1;
     for (int s = 0; s <= precision; s++) {
-        memset(zws, 0, sizeof(double) * row_count);
+        memset(zws, 0, sizeof(double) * row_count); // not secure -> does not matter is overwritten yjCalculation
         *result_lambda = interval_start;
         *result_skew = g_maxHighDouble;
-        for (double lambda_i = interval_start; lambda_i <= interval_end;
-             lambda_i += interval_step) {
+        int steps = ceil((interval_end - interval_start) / interval_step);
+        for (int i = 0; i <= steps; i++) {
+            double lambda_i = interval_start + (interval_step * i);
             for (int i = 0; i < row_count; i++) {
                 if (yjCalculation(*(vector + i), lambda_i, zws + i) != 0) {
                     printf("\texception occured during yeoJohnson\n");

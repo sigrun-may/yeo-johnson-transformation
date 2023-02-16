@@ -1,5 +1,5 @@
 import pandas as pd
-from python_bindings.c_accesspoint import yeo_johnson
+from c_accesspoint import yeo_johnson
 
 # adapt data path and parsing
 dataFrame = pd.read_csv("../x64/data/generated_test.csv", header=0, low_memory=False)

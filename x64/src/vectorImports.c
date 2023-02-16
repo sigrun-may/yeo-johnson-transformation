@@ -55,7 +55,7 @@ static int getMatrixSizeFromCsv(FILE *file, int *column_size, int *row_size) {
         printf("\tfile passed is null.\n");
         return -1;
     }
-    int next_char = fgetc(file);
+    int next_char;
     int column_counter = 0;
     while ((next_char = fgetc(file)) != EOF) {
         if (next_char == DOT) {
@@ -118,12 +118,12 @@ static int fillMatrixFromCsv(FILE *file, double ***matrix, int row_count,
     while ((int) c[0] != EOF) {
         if ((int) c[0] == SEMICOLON) {
             double parameter = strtod(line, NULL);
-            *(*((*matrix) + column_counter) + row_counter) = parameter;
+            *(*((*matrix) + column_counter) + row_counter) = parameter; // column and row can not be exclusivly zero -> left operand is guaranteed to be valid 
             line[0] = '\0';
             column_counter++;
         } else if ((int) c[0] == EOL) {
             double parameter = strtod(line, NULL);
-            *(*((*matrix) + column_counter) + row_counter) = parameter;
+            *(*((*matrix) + column_counter) + row_counter) = parameter; // column and row can not be exclusivly zero -> left operand is guaranteed to be valid 
             line[0] = '\0';
             column_counter++;
             row_counter++;
@@ -173,7 +173,7 @@ int importVectorTableFromCsv(char *file_path, MATRIX **vector_list) {
         return -4;
     }
     double **column_addresses =
-            (double **) malloc(sizeof(double **) * (*vector_list)->cols);
+            (double **) malloc(sizeof(double *) * (*vector_list)->cols);   // cols can not be zero -> see getMatrixSizeFromCsv
     if (column_addresses == NULL) {
         printf("\tFailed to allocate memory for column_addresses.\n");
         return -5;
@@ -181,6 +181,7 @@ int importVectorTableFromCsv(char *file_path, MATRIX **vector_list) {
     for (int i = 0; i < (*vector_list)->cols; i++) {
         double *row_info = (double *) malloc(sizeof(double) * (*vector_list)->rows);
         if (row_info == NULL) {
+            free(column_addresses);
             printf("\tFailed to allocate memory for row_info.\n");
             return -6;
         }

@@ -1,14 +1,14 @@
 # -*- MakeFile -*-
 ifeq ($(OS), Windows_NT)
-	detected_OS := Windows
-	CLEAN = del /s /q /f .\x64\bin\* .\x64\obj\* .\x64_u\bin\* .\x64_u\obj\*  .\x86\bin\* .\x86\obj\*  .\x86_u\bin\* .\x86_u\obj\*
-	CFLAGS = -g -Wall -Werror -pthread -lpthread -static
-	SHARE = bin/comInterface.dll
+detected_OS = Windows
+CLEAN = del /s /q /f .\x64\bin\* .\x64\obj\* .\x64_u\bin\* .\x64_u\obj\*  .\x86\bin\* .\x86\obj\*  .\x86_u\bin\* .\x86_u\obj\*
+CFLAGS = -g -Wall -Werror -pthread -lpthread -static
+SHARE = bin/comInterface.dll
 else
-	detected_OS := $(shell uname)
-	CLEAN= -rm *.o x64/obj/* x64/bin/* x64_u/obj/* x64_u/bin/* x86/obj/* x86/bin/* x86_u/obj/* x86_u/bin/*
-	CFLAGS=-g -Wall -Werror -pthread -lpthread
-	SHARE = bin/comInterface.so
+detected_OS = $(shell uname)
+CLEAN = -rm *.o x64/obj/* x64/bin/* x64_u/obj/* x64_u/bin/* x86/obj/* x86/bin/* x86_u/obj/* x86_u/bin/*
+CFLAGS =-g -Wall -Werror -pthread -lpthread
+SHARE = bin/comInterface.so
 endif
 
 CC=gcc
@@ -48,15 +48,16 @@ SHARE32		=	x86/$(SHARE)
 SHARE32u	=	x86_u/$(SHARE)
 
 
+
+ifeq ($(detected_OS), Windows)
 dir: 
-	mkdir -p x64/obj
-	mkdir -p x64_u/obj
-	mkdir -p x86/obj
-	mkdir -p x86_u/obj
-	mkdir -p x86_u/bin
-	mkdir -p x86/bin
-	mkdir -p x64_u/bin
-	mkdir -p x64/bin
+	mkdir "x64/obj"
+	mkdir "x64/bin"
+else
+dir: 
+	mkdir -p x64/obj x64/bin
+endif
+	
 
 all:$(dir) $(SHARE64) $(SHARE64u) $(SHARE32) $(SHARE32u)
 	

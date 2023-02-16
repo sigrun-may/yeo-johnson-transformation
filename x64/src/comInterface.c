@@ -303,11 +303,16 @@ int ciParallelOperation(double interval_start, double interval_end,
         tsSetTimer();
     }
     // Thread instantiation
+    if (thread_count <= 0) {
+      printf("thread_count must be >= 1\n");
+      return -1;
+    } 
     pthread_t *th = malloc(sizeof(pthread_t) * thread_count);
     if (th == NULL) {
         printf("Not enough memory for thread creation\n");
         return -1;
     }
+    
     for (int i = 0; i < thread_count; i++) {
         TBODY *tb = malloc(sizeof(TBODY));
         tb->input_matrix = input_matrix;
@@ -319,7 +324,7 @@ int ciParallelOperation(double interval_start, double interval_end,
         pthread_create(&th[i], NULL, &threaded_operation, tb);
     }
     for (int i = 0; i < thread_count; i++) {
-        pthread_join(th[i], NULL);
+        pthread_join(th[i], NULL);  // no memory leak -> memory is freed in threaded_operation
     }
     if (standardize) {
         // standardize vector list
