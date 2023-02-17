@@ -37,7 +37,7 @@ def _transform_yeo_johnson_c() -> Tuple[np.ndarray, np.ndarray]:
         standardize=1,
         time_stamps=0,
         thread_count=1,
-    )  # matrix, interval_start, interval_end, precision, standardize, time_stamps
+    )
 
     # transform test data
     transformed_test_np_c = np.zeros_like(test_np)
@@ -77,10 +77,12 @@ def _transform_yeo_johnson_c() -> Tuple[np.ndarray, np.ndarray]:
     return TrainTestSplit(train_np=transformed_train_np, test_np=transformed_test_np_c)
 
 
+# generate test data
 data_df = pd.read_csv('../x64/data/artificial_20_20.csv')
 print("data shape:", data_df.shape)
 shuffled_data_df = shuffle(data_df)
 test_np = shuffled_data_df.iloc[:5, 1:].values
 train_np = shuffled_data_df.iloc[5:, 1:].values
 
+# run checks
 train_c, test_c = _transform_yeo_johnson_c()
