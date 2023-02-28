@@ -1,10 +1,10 @@
 /****************************************************************
-* Copyright (c) 2023 Jerome Brenig, Sigrun May
-* Ostfalia Hochschule für angewandte Wissenschaften
-*
-* This software is distributed under the terms of the MIT license
-* which is available at https://opensource.org/licenses/MIT
-*
+ * Copyright (c) 2023 Jerome Brenig, Sigrun May
+ * Ostfalia Hochschule für angewandte Wissenschaften
+ *
+ * This software is distributed under the terms of the MIT license
+ * which is available at https://opensource.org/licenses/MIT
+ *
  * FILENAME : testFramework.c
  *
  * DESCRIBTION  :
@@ -52,12 +52,12 @@
  * @return int error return code
  */
 int assert_int_equals(int a, int b, char *desc) {
-    if (a == b) {
-        return 0;
-    } else {
-        printf("%s\n", desc);
-    }
-    return -1;
+  if (a == b) {
+    return 0;
+  } else {
+    printf("%s\n", desc);
+  }
+  return -1;
 }
 
 /**
@@ -69,12 +69,12 @@ int assert_int_equals(int a, int b, char *desc) {
  * @return int error return code
  */
 int assert_double_equals(double a, double b, char *desc) {
-    if (a == b) {
-        return 0;
-    } else {
-        printf("%s\n", desc);
-    }
-    return -1;
+  if (a == b) {
+    return 0;
+  } else {
+    printf("%s\n", desc);
+  }
+  return -1;
 }
 
 /**
@@ -86,12 +86,12 @@ int assert_double_equals(double a, double b, char *desc) {
  * @return int error return code
  */
 int assert_float_equals(float a, float b, char *desc) {
-    if (a == b) {
-        return 0;
-    } else {
-        printf("%s\n", desc);
-    }
-    return -1;
+  if (a == b) {
+    return 0;
+  } else {
+    printf("%s\n", desc);
+  }
+  return -1;
 }
 
 /**
@@ -103,11 +103,11 @@ int assert_float_equals(float a, float b, char *desc) {
  * @return int error return code
  */
 int assert_string_equals(char *a, char *b, char *desc) {
-    if (strcmp(a, b) == 0) {
-        return 0;
-    }
-    printf("%s\n", desc);
-    return -1;
+  if (strcmp(a, b) == 0) {
+    return 0;
+  }
+  printf("%s\n", desc);
+  return -1;
 }
 
 /**
@@ -120,11 +120,11 @@ int assert_string_equals(char *a, char *b, char *desc) {
  * @return int error return code
  */
 int is_in_bound(double a, double origin, double range, char *desc) {
-    if (a < origin + range && a > origin - range) {
-        return 0;
-    }
-    printf("%s\n", desc);
-    return -1;
+  if (a < origin + range && a > origin - range) {
+    return 0;
+  }
+  printf("%s\n", desc);
+  return -1;
 }
 
 /**
@@ -135,9 +135,9 @@ int is_in_bound(double a, double origin, double range, char *desc) {
  * @return int
  */
 int assert_not_null(void *ptr, char *desc) {
-    if (ptr != NULL) {
-        return 0;
-    }
-    printf("%s\n", desc);
-    return -1;
+  if (ptr != NULL) {
+    return 0;
+  }
+  printf("%s\n", desc);
+  return -1;
 }

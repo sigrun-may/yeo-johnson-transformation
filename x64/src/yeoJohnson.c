@@ -1,10 +1,10 @@
 /****************************************************************
-* Copyright (c) 2023 Jerome Brenig, Sigrun May
-* Ostfalia Hochschule für angewandte Wissenschaften
-*
-* This software is distributed under the terms of the MIT license
-* which is available at https://opensource.org/licenses/MIT
-*
+ * Copyright (c) 2023 Jerome Brenig, Sigrun May
+ * Ostfalia Hochschule für angewandte Wissenschaften
+ *
+ * This software is distributed under the terms of the MIT license
+ * which is available at https://opensource.org/licenses/MIT
+ *
  * FILENAME : yeoJohnson.c
  *
  * DESCRIPTION  :
@@ -40,15 +40,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "include/errnumCodes.h"
 #include "include/testFramework.h"
 #include "include/yeoJohnson.h"
+
 
 /*****************************************************************************
  *                               CONSTANTS
  *****************************************************************************/
 
-static const double g_max_high_double = (double) 0x7FFFFFFFFFFFFF;
-static const double g_max_low_double = (double) 0x80000000000000;
+static const double g_max_high_double = (double)0x7FFFFFFFFFFFFF;
+static const double g_max_low_double = (double)0x80000000000000;
 // static const double g_max_high_float = (float)0x7FFFFFFF;
 // static const double g_max_low_float = (float)0x80000000;
 
@@ -75,16 +77,16 @@ static boundaryBox bB_yj3;
  * @return int error return code
  */
 static int yjFormular1(double y, double lambda, double *result) {
-    if (!bB_set) {
-        printf("\tyjFormular1: boundary box is not set\n");
-        return -1;
-    }
-    if (y > bB_yj1.upper_limit || y < bB_yj1.lower_limit) {
-        printf("\tyjFormular1: value not inside boundary box\n");
-        return -2;
-    }
-    *result = (pow(y + 1, lambda) - 1) / lambda;
-    return 0;
+  if (!bB_set) {
+    // printf("\tyjFormular1: boundary box is not set\n");
+    return ERR_BB_NOT_SET;
+  }
+  if (y > bB_yj1.upper_limit || y < bB_yj1.lower_limit) {
+    // printf("\tyjFormular1: value not inside boundary box\n");
+    return ERR_VALUE_NOT_IN_BB;
+  }
+  *result = (pow(y + 1, lambda) - 1) / lambda;
+  return 0;
 }
 
 /**
@@ -97,12 +99,12 @@ static int yjFormular1(double y, double lambda, double *result) {
  * @return int error return code
  */
 static int yjFormular2(double y, double *result) {
-    if (y == g_max_high_double) {
-        printf("\tyjFormular2: overflow y is equal to g_max_low_double\n");
-        return -1;
-    }
-    *result = log(y + 1);
-    return 0;
+  if (y == g_max_high_double) {
+    // printf("\tyjFormular2: overflow y is equal to g_max_low_double\n");
+    return ERR_VALUE_OVERFLOW;
+  }
+  *result = log(y + 1);
+  return 0;
 }
 
 /**
@@ -115,17 +117,17 @@ static int yjFormular2(double y, double *result) {
  * @return int error return code
  */
 static int yjFormular3(double y, double lambda, double *result) {
-    if (!bB_set) {
-        printf("\tyjFormular3: boundary box is not set\n");
-        return -1;
-    }
-    if (y > bB_yj3.upper_limit || y < bB_yj3.lower_limit) {
-        printf("\tyjFormular3: value not inside boundary box/ y=%f, ul=%f, ll=%f\n",
-               y, bB_yj3.upper_limit, bB_yj3.lower_limit);
-        return -2;
-    }
-    *result = -(pow(-y + 1, 2 - lambda) - 1) / (2 - lambda);
-    return 0;
+  if (!bB_set) {
+    // printf("\tyjFormular3: boundary box is not set\n");
+    return ERR_BB_NOT_SET;
+  }
+  if (y > bB_yj3.upper_limit || y < bB_yj3.lower_limit) {
+    // printf("\tyjFormular3: value not inside boundary box/ y=%f, ul=%f,
+    // ll=%f\n", y, bB_yj3.upper_limit, bB_yj3.lower_limit);
+    return ERR_VALUE_NOT_IN_BB;
+  }
+  *result = -(pow(-y + 1, 2 - lambda) - 1) / (2 - lambda);
+  return 0;
 }
 
 /**
@@ -138,12 +140,12 @@ static int yjFormular3(double y, double lambda, double *result) {
  * @return int error return code
  */
 static int yjFormular4(double y, double *result) {
-    if (y == g_max_low_double) {
-        printf("\tyjFormular4: overflow y is equal to g_max_low_double\n");
-        return -1;
-    }
-    *result = -log(-y + 1);
-    return 0;
+  if (y == g_max_low_double) {
+    // printf("\tyjFormular4: overflow y is equal to g_max_low_double\n");
+    return ERR_VALUE_OVERFLOW;
+  }
+  *result = -log(-y + 1);
+  return 0;
 }
 
 /*****************************************************************************
@@ -157,22 +159,22 @@ static int yjFormular4(double y, double *result) {
  * @param upper_lambda highest lambda possible for this search
  */
 void buildBoundaryBox(double lower_lambda, double upper_lambda) {
-    upper_lambda = (upper_lambda == 0) ? 1.0 : upper_lambda;
-    lower_lambda = (lower_lambda == 0) ? -1 : lower_lambda;
-    bB_yj1.upper_limit =
-            pow(upper_lambda * g_max_high_double + 1, 1 / upper_lambda) - 1;
-    bB_yj1.lower_limit =
-            pow(lower_lambda * g_max_low_double + 1, 1 / lower_lambda) - 1;
+  upper_lambda = (upper_lambda == 0) ? 1.0 : upper_lambda;
+  lower_lambda = (lower_lambda == 0) ? -1 : lower_lambda;
+  bB_yj1.upper_limit =
+      pow(upper_lambda * g_max_high_double + 1, 1 / upper_lambda) - 1;
+  bB_yj1.lower_limit =
+      pow(lower_lambda * g_max_low_double + 1, 1 / lower_lambda) - 1;
 
-    upper_lambda = (upper_lambda == 2) ? 3 : upper_lambda;
-    lower_lambda = (lower_lambda == 2) ? 1 : lower_lambda;
-    bB_yj3.upper_limit = -(
-            pow(-g_max_high_double * (2 - upper_lambda) + 1, 1 / (2 - upper_lambda)) -
-            1);
-    bB_yj3.lower_limit = -(
-            pow(-g_max_low_double * (2 - lower_lambda) + 1, 1 / (2 - lower_lambda)) -
-            1);
-    bB_set = 1;
+  upper_lambda = (upper_lambda == 2) ? 3 : upper_lambda;
+  lower_lambda = (lower_lambda == 2) ? 1 : lower_lambda;
+  bB_yj3.upper_limit = -(
+      pow(-g_max_high_double * (2 - upper_lambda) + 1, 1 / (2 - upper_lambda)) -
+      1);
+  bB_yj3.lower_limit = -(
+      pow(-g_max_low_double * (2 - lower_lambda) + 1, 1 / (2 - lower_lambda)) -
+      1);
+  bB_set = 1;
 }
 
 /**
@@ -184,50 +186,50 @@ void buildBoundaryBox(double lower_lambda, double upper_lambda) {
  * @return int error return code
  */
 int yjCalculation(double y, double lambda, double *result) {
-    int errnum;
-    if (y >= 0) {
-        if (lambda != 0) {
-            errnum = yjFormular1(y, lambda, result);
-            if (errnum != 0) {
-                printf("\texception in yjFormular1\n");
-                return -1;
-            }
-        } else if (lambda == 0) {
-            errnum = yjFormular2(y, result);
-            if (errnum != 0) {
-                printf("\texception in yjFormular2\n");
-                return -1;
-            }
-        }
-    } else if (y < 0) {
-        if (lambda != 2) {
-            errnum = yjFormular3(y, lambda, result);
-            if (errnum != 0) {
-                printf("\texception in yjFormular3\n");
-                return -1;
-            }
-        } else if (lambda == 2) {
-            errnum = yjFormular4(y, result);
-            if (errnum != 0) {
-                printf("\texception in yjFormular4\n");
-                return -1;
-            }
-        }
+  int errnum = 0; // yj calculation error mask
+  if (y >= 0) {
+    if (lambda != 0) {
+      errnum |= yjFormular1(y, lambda, result);
+      if (errnum != 0) {
+        // printf("\texception in yjFormular1\n");
+        return ERR_YJ1_ID | errnum;
+      }
+    } else if (lambda == 0) {
+      errnum |= yjFormular2(y, result);
+      if (errnum != 0) {
+        // printf("\texception in yjFormular2\n");
+        return ERR_YJ2_ID | errnum;
+      }
     }
-    return 0;
+  } else if (y < 0) {
+    if (lambda != 2) {
+      errnum |= yjFormular3(y, lambda, result);
+      if (errnum != 0) {
+        // printf("\texception in yjFormular3\n");
+        return ERR_YJ3_ID | errnum;
+      }
+    } else if (lambda == 2) {
+      errnum |= yjFormular4(y, result);
+      if (errnum != 0) {
+        // printf("\texception in yjFormular4\n");
+        return ERR_YJ4_ID | errnum;
+      }
+    }
+  }
+  return 0;
 }
 
 int yjTransformBy(double **vector, double lambda, int rows) {
-    for (int i = 0; i < rows; i++) {
-        double result = 0;
-        int err_num = yjCalculation(*((*vector) + i), lambda, &result);
-        if (err_num != 0) {
-            printf("\texception in yjTransformBy\n");
-            return -1;
-        }
-        *((*vector) + i) = result;
+  for (int i = 0; i < rows; i++) {
+    double result = 0;
+    int err_num = yjCalculation(*((*vector) + i), lambda, &result);
+    if (err_num != 0) {
+      // printf("\texception in yjTransformBy\n");
+      return ERR_TRANSFORM | err_num;
     }
-    return 0;
+    *((*vector) + i) = result;
+  }
+  return 0;
 }
 
 /*****************************************************************************

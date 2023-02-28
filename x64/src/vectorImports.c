@@ -1,10 +1,10 @@
 /****************************************************************
-* Copyright (c) 2023 Jerome Brenig, Sigrun May
-* Ostfalia Hochschule für angewandte Wissenschaften
-*
-* This software is distributed under the terms of the MIT license
-* which is available at https://opensource.org/licenses/MIT
-*
+ * Copyright (c) 2023 Jerome Brenig, Sigrun May
+ * Ostfalia Hochschule für angewandte Wissenschaften
+ *
+ * This software is distributed under the terms of the MIT license
+ * which is available at https://opensource.org/licenses/MIT
+ *
  * FILENAME :   vectorImports.c
  *
  * DESCRIPTION  :
@@ -49,33 +49,33 @@
  * @return int error return code
  */
 static int getMatrixSizeFromCsv(FILE *file, int *column_size, int *row_size) {
-    *row_size = 0;
-    *column_size = 0;
-    if (file == NULL) {
-        printf("\tfile passed is null.\n");
-        return -1;
+  *row_size = 0;
+  *column_size = 0;
+  if (file == NULL) {
+    printf("\tfile passed is null.\n");
+    return -1;
+  }
+  int next_char;
+  int column_counter = 0;
+  while ((next_char = fgetc(file)) != EOF) {
+    if (next_char == DOT) {
+      printf("\tWrong format, pls use \',\' as decimal point and \';\' as "
+             "seperator\n");
+      return -2;
     }
-    int next_char;
-    int column_counter = 0;
-    while ((next_char = fgetc(file)) != EOF) {
-        if (next_char == DOT) {
-            printf("\tWrong format, pls use \',\' as decimal point and \';\' as "
-                   "seperator\n");
-            return -2;
-        }
-        if (next_char == SEMICOLON) { // next_char == KOMMA ||
-            column_counter++;
-        } else if (next_char == EOL) {
-            (*row_size)++;
-            column_counter++;
-            if (column_counter > *column_size) {
-                *column_size = column_counter;
-            }
-            column_counter = 0;
-        }
+    if (next_char == SEMICOLON) { // next_char == KOMMA ||
+      column_counter++;
+    } else if (next_char == EOL) {
+      (*row_size)++;
+      column_counter++;
+      if (column_counter > *column_size) {
+        *column_size = column_counter;
+      }
+      column_counter = 0;
     }
-    rewind(file);
-    return 0;
+  }
+  rewind(file);
+  return 0;
 }
 
 /**
@@ -89,53 +89,57 @@ static int getMatrixSizeFromCsv(FILE *file, int *column_size, int *row_size) {
  */
 static int fillMatrixFromCsv(FILE *file, double ***matrix, int row_count,
                              int column_count) {
-    char *line = (char *) malloc(MAX_STRING_SIZE);
-    line[0] = '\0';
-    if (line == NULL) {
-        printf("\tMemory could not be allocated\n");
-        return -1;
+  char *line = (char *)malloc(MAX_STRING_SIZE);
+  line[0] = '\0';
+  if (line == NULL) {
+    printf("\tMemory could not be allocated\n");
+    return -1;
+  }
+  if (file == NULL) {
+    printf("\tFile is null\n");
+    return -2;
+  }
+  if (matrix == NULL) {
+    printf("\tMatrix is null\n");
+    return -3;
+  }
+  if (row_count == 0) {
+    printf("\trow_count is 0, no rows to be read\n");
+    return -4;
+  }
+  if (column_count == 0) {
+    printf("\tcolumn_count is 0, no columns to be read\n");
+    return -5;
+  }
+  int row_counter = 0;
+  int column_counter = 0;
+  char c[1] = {' '};
+  c[0] = (char)fgetc(file);
+  while ((int)c[0] != EOF) {
+    if ((int)c[0] == SEMICOLON) {
+      double parameter = strtod(line, NULL);
+      *(*((*matrix) + column_counter) + row_counter) =
+          parameter; // column and row can not be exclusivly zero -> left
+                     // operand is guaranteed to be valid
+      line[0] = '\0';
+      column_counter++;
+    } else if ((int)c[0] == EOL) {
+      double parameter = strtod(line, NULL);
+      *(*((*matrix) + column_counter) + row_counter) =
+          parameter; // column and row can not be exclusivly zero -> left
+                     // operand is guaranteed to be valid
+      line[0] = '\0';
+      column_counter++;
+      row_counter++;
+      column_counter = 0;
+    } else {
+      strcat(line, c);
     }
-    if (file == NULL) {
-        printf("\tFile is null\n");
-        return -2;
-    }
-    if (matrix == NULL) {
-        printf("\tMatrix is null\n");
-        return -3;
-    }
-    if (row_count == 0) {
-        printf("\trow_count is 0, no rows to be read\n");
-        return -4;
-    }
-    if (column_count == 0) {
-        printf("\tcolumn_count is 0, no columns to be read\n");
-        return -5;
-    }
-    int row_counter = 0;
-    int column_counter = 0;
-    char c[1] = {' '};
-    c[0] = (char) fgetc(file);
-    while ((int) c[0] != EOF) {
-        if ((int) c[0] == SEMICOLON) {
-            double parameter = strtod(line, NULL);
-            *(*((*matrix) + column_counter) + row_counter) = parameter; // column and row can not be exclusivly zero -> left operand is guaranteed to be valid 
-            line[0] = '\0';
-            column_counter++;
-        } else if ((int) c[0] == EOL) {
-            double parameter = strtod(line, NULL);
-            *(*((*matrix) + column_counter) + row_counter) = parameter; // column and row can not be exclusivly zero -> left operand is guaranteed to be valid 
-            line[0] = '\0';
-            column_counter++;
-            row_counter++;
-            column_counter = 0;
-        } else {
-            strcat(line, c);
-        }
-        c[0] = (char) fgetc(file);
-    }
-    rewind(file);
-    free(line);
-    return 0;
+    c[0] = (char)fgetc(file);
+  }
+  rewind(file);
+  free(line);
+  return 0;
 }
 
 /*****************************************************************************
@@ -151,61 +155,62 @@ static int fillMatrixFromCsv(FILE *file, double ***matrix, int row_count,
  * @return int error return code
  */
 int importVectorTableFromCsv(char *file_path, MATRIX **vector_list) {
-    int errnum;
-    FILE *file;
-    if (file_path == NULL) {
-        printf("\tfile_path is null\n");
-        return -1;
+  int errnum;
+  FILE *file;
+  if (file_path == NULL) {
+    printf("\tfile_path is null\n");
+    return -1;
+  }
+  if (*vector_list == NULL) {
+    printf("\tvector_list is null\n");
+    return -2;
+  }
+  file = fopen(file_path, "r");
+  if (file == NULL) {
+    printf("\t\"%s\" does not exist in data directory.\n", file_path);
+    return -3;
+  }
+  errnum =
+      getMatrixSizeFromCsv(file, &(*vector_list)->cols, &(*vector_list)->rows);
+  if (errnum != 0) {
+    printf("\texception while getting dimensions.\n");
+    return -4;
+  }
+  double **column_addresses = (double **)malloc(
+      sizeof(double *) *
+      (*vector_list)->cols); // cols can not be zero -> see getMatrixSizeFromCsv
+  if (column_addresses == NULL) {
+    printf("\tFailed to allocate memory for column_addresses.\n");
+    return -5;
+  }
+  for (int i = 0; i < (*vector_list)->cols; i++) {
+    double *row_info = (double *)malloc(sizeof(double) * (*vector_list)->rows);
+    if (row_info == NULL) {
+      free(column_addresses);
+      printf("\tFailed to allocate memory for row_info.\n");
+      return -6;
     }
-    if (*vector_list == NULL) {
-        printf("\tvector_list is null\n");
-        return -2;
-    }
-    file = fopen(file_path, "r");
-    if (file == NULL) {
-        printf("\t\"%s\" does not exist in data directory.\n", file_path);
-        return -3;
-    }
-    errnum =
-            getMatrixSizeFromCsv(file, &(*vector_list)->cols, &(*vector_list)->rows);
-    if (errnum != 0) {
-        printf("\texception while getting dimensions.\n");
-        return -4;
-    }
-    double **column_addresses =
-            (double **) malloc(sizeof(double *) * (*vector_list)->cols);   // cols can not be zero -> see getMatrixSizeFromCsv
-    if (column_addresses == NULL) {
-        printf("\tFailed to allocate memory for column_addresses.\n");
-        return -5;
-    }
-    for (int i = 0; i < (*vector_list)->cols; i++) {
-        double *row_info = (double *) malloc(sizeof(double) * (*vector_list)->rows);
-        if (row_info == NULL) {
-            free(column_addresses);
-            printf("\tFailed to allocate memory for row_info.\n");
-            return -6;
-        }
-        *(column_addresses + i) = row_info;
-    }
-    (*vector_list)->data = column_addresses;
-    double *new_mem = (double *) malloc(sizeof(double) * (*vector_list)->cols);
-    if (new_mem == NULL) {
-        printf("\tFailed to allocate memory for lambda_storage.\n");
-        return -7;
-    }
-    (*vector_list)->lambda = new_mem;
-    new_mem = (double *) malloc(sizeof(double) * (*vector_list)->cols);
-    if (new_mem == NULL) {
-        printf("\tFailed to allocate memory for skew_storage.\n");
-        return -8;
-    }
-    (*vector_list)->skew = new_mem;
-    if (fillMatrixFromCsv(file, &(*vector_list)->data, (*vector_list)->rows,
-                          (*vector_list)->cols) != 0) {
-        printf("\texception while parsing csv file.\n");
-        return -9;
-    }
-    return 0;
+    *(column_addresses + i) = row_info;
+  }
+  (*vector_list)->data = column_addresses;
+  double *new_mem = (double *)malloc(sizeof(double) * (*vector_list)->cols);
+  if (new_mem == NULL) {
+    printf("\tFailed to allocate memory for lambda_storage.\n");
+    return -7;
+  }
+  (*vector_list)->lambda = new_mem;
+  new_mem = (double *)malloc(sizeof(double) * (*vector_list)->cols);
+  if (new_mem == NULL) {
+    printf("\tFailed to allocate memory for skew_storage.\n");
+    return -8;
+  }
+  (*vector_list)->skew = new_mem;
+  if (fillMatrixFromCsv(file, &(*vector_list)->data, (*vector_list)->rows,
+                        (*vector_list)->cols) != 0) {
+    printf("\texception while parsing csv file.\n");
+    return -9;
+  }
+  return 0;
 }
 
 /*****************************************************************************
