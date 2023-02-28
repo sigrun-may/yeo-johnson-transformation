@@ -1,10 +1,10 @@
 /****************************************************************
-* Copyright (c) 2023 Jerome Brenig, Sigrun May
-* Ostfalia Hochschule für angewandte Wissenschaften
-*
-* This software is distributed under the terms of the MIT license
-* which is available at https://opensource.org/licenses/MIT
-*
+ * Copyright (c) 2023 Jerome Brenig, Sigrun May
+ * Ostfalia Hochschule für angewandte Wissenschaften
+ *
+ * This software is distributed under the terms of the MIT license
+ * which is available at https://opensource.org/licenses/MIT
+ *
  *   lambdaSearch.h
  */
 
@@ -18,11 +18,11 @@ int lsAverage(double *vector, int row_count, double *result);
 
 int lsLambdaSearch(double *vector, double interval_start, double interval_end,
                    double interval_step, int row_count, double *result_lambda,
-                   double *result_skew);
+                   double *result_skew, int *errnum);
 
 int lsSmartSearch(double *vector, double interval_start, double interval_end,
                   int precision, int row_count, double *result_lambda,
-                  double *result_skew);
+                  double *result_skew, int *errnum);
 
 // unit tests
 #ifdef UNIT_TEST

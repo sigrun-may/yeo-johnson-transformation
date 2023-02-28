@@ -1,10 +1,10 @@
 /****************************************************************
-* Copyright (c) 2023 Jerome Brenig, Sigrun May
-* Ostfalia Hochschule für angewandte Wissenschaften
-*
-* This software is distributed under the terms of the MIT license
-* which is available at https://opensource.org/licenses/MIT
-*
+ * Copyright (c) 2023 Jerome Brenig, Sigrun May
+ * Ostfalia Hochschule für angewandte Wissenschaften
+ *
+ * This software is distributed under the terms of the MIT license
+ * which is available at https://opensource.org/licenses/MIT
+ *
  *   vectorImports.h
  */
 
@@ -20,11 +20,12 @@
 
 // structs
 typedef struct _MATRIX {
-    int rows;
-    int cols;
-    double **data;
-    double *lambda;
-    double *skew;
+  int rows;
+  int cols;
+  double **data;
+  double *lambda;
+  double *skew;
+  int *errnum;
 } MATRIX;
 
 // public functions

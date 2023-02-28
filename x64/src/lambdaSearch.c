@@ -1,10 +1,10 @@
 /****************************************************************
-* Copyright (c) 2023 Jerome Brenig, Sigrun May
-* Ostfalia Hochschule für angewandte Wissenschaften
-*
-* This software is distributed under the terms of the MIT license
-* which is available at https://opensource.org/licenses/MIT
-*
+ * Copyright (c) 2023 Jerome Brenig, Sigrun May
+ * Ostfalia Hochschule für angewandte Wissenschaften
+ *
+ * This software is distributed under the terms of the MIT license
+ * which is available at https://opensource.org/licenses/MIT
+ *
  * FILENAME : lambdaSearch.c
  *
  * DESCRIPTION  :
@@ -39,9 +39,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "include/errnumCodes.h"
 #include "include/lambdaSearch.h"
 #include "include/testFramework.h"
 #include "include/yeoJohnson.h"
+
 
 /*****************************************************************************
  *                               GLOBALS
@@ -62,27 +64,27 @@ static const double g_maxHighDouble = __DBL_MAX__;
  * @return int error return code
  */
 int lsAverage(double *vector, int row_count, double *result) {
-    *result = 0;
-    if (vector == NULL) {
-        printf("\tlsAverage: vector is null\n");
-        return -1;
+  *result = 0;
+  if (vector == NULL) {
+    // printf("\tlsAverage: vector is null\n");
+    return ERR_VECTOR_IS_NULL;
+  }
+  if (row_count <= 0) {
+    // printf("\tlsAverage: not enough rows\n");
+    return ERR_NOT_ENOUGH_ROWS;
+  }
+  double limit = g_maxHighDouble / row_count;
+  for (int i = 0; i < row_count; i++) {
+    double component = *(vector + i);
+    if (component > limit || component < -limit) {
+      // printf("\tlsAverage: component exeeded limit, abort for overflow "
+      // "protection\n");
+      return ERR_VALUE_OVERFLOW;
     }
-    if (row_count <= 0) {
-        printf("\tlsAverage: not enough rows\n");
-        return -2;
-    }
-    double limit = g_maxHighDouble / row_count;
-    for (int i = 0; i < row_count; i++) {
-        double component = *(vector + i);
-        if (component > limit || component < -limit) {
-            printf("\tlsAverage: component exeeded limit, abort for overflow "
-                   "protection\n");
-            return -3;
-        }
-        *result += component;
-    }
-    *result /= row_count;
-    return 0;
+    *result += component;
+  }
+  *result /= row_count;
+  return 0;
 }
 
 /**
@@ -95,28 +97,28 @@ int lsAverage(double *vector, int row_count, double *result) {
  * @return int error return code
  */
 int lsVariance(double *vector, double average, int row_count, double *result) {
-    *result = 0;
-    if (vector == NULL) {
-        printf("\tlsVariance: vector is null\n");
-        return -1;
+  *result = 0;
+  if (vector == NULL) {
+    // printf("\tlsVariance: vector is null\n");
+    return ERR_VECTOR_IS_NULL;
+  }
+  if (row_count <= 1) {
+    // printf("\tlsVariance: not enough rows\n");
+    return ERR_NOT_ENOUGH_ROWS;
+  }
+  double limit = sqrt(g_maxHighDouble / row_count) + average;
+  for (int i = 0; i < row_count; i++) {
+    double component = *(vector + i);
+    if (component > limit || component < -limit) {
+      // printf("\tlsVariance: component exeeded limit, abort for overflow "
+      // "protection\n");
+      return ERR_VALUE_OVERFLOW;
     }
-    if (row_count <= 1) {
-        printf("\tlsVariance: not enough rows\n");
-        return -2;
-    }
-    double limit = sqrt(g_maxHighDouble / row_count) + average;
-    for (int i = 0; i < row_count; i++) {
-        double component = *(vector + i);
-        if (component > limit || component < -limit) {
-            printf("\tlsVariance: component exeeded limit, abort for overflow "
-                   "protection\n");
-            return -3;
-        }
-        *result += (component - average) * (component - average);
-    }
-    *result /= row_count - 1;
-    *result = sqrt(*result);
-    return 0;
+    *result += (component - average) * (component - average);
+  }
+  *result /= row_count - 1;
+  *result = sqrt(*result);
+  return 0;
 }
 
 /**
@@ -131,29 +133,29 @@ int lsVariance(double *vector, double average, int row_count, double *result) {
  */
 static int lsSkew(double *vector, double average, double variance,
                   int row_count, double *result) {
-    *result = 0;
-    if (vector == NULL) {
-        printf("\tlsSkew: vector is null\n");
-        return -1;
+  *result = 0;
+  if (vector == NULL) {
+    // printf("\tlsSkew: vector is null\n");
+    return ERR_VECTOR_IS_NULL;
+  }
+  if (row_count <= 2) {
+    // printf("\tlsSkew:  not enough rows\n");
+    return ERR_NOT_ENOUGH_ROWS;
+  }
+  double limit = cbrt(g_maxHighDouble / row_count) * variance + average;
+  for (int i = 0; i < row_count; i++) {
+    double component = *(vector + i);
+    if (component > limit || component < -limit) {
+      // printf("\tlsSkew:  component exeeded limit, abort for overflow "
+      // "protection\n");
+      return ERR_VALUE_OVERFLOW;
     }
-    if (row_count <= 2) {
-        printf("\tlsSkew:  not enough rows\n");
-        return -2;
-    }
-    double limit = cbrt(g_maxHighDouble / row_count) * variance + average;
-    for (int i = 0; i < row_count; i++) {
-        double component = *(vector + i);
-        if (component > limit || component < -limit) {
-            printf("\tlsSkew:  component exeeded limit, abort for overflow "
-                   "protection\n");
-            return -3;
-        }
-        *result += ((component - average) / variance) *
-                   ((component - average) / variance) *
-                   ((component - average) / variance);
-    }
-    *result /= row_count;
-    return 0;
+    *result += ((component - average) / variance) *
+               ((component - average) / variance) *
+               ((component - average) / variance);
+  }
+  *result /= row_count;
+  return 0;
 }
 
 /**
@@ -166,16 +168,16 @@ static int lsSkew(double *vector, double average, double variance,
  * @return int error return code
  */
 static int lsIsCloserToZero(double value0, double value1, int *result) {
-    value0 = value0 < 0 ? -value0 : value0;
-    value1 = value1 < 0 ? -value1 : value1;
-    if (value0 < value1) {
-        *result = 0;
-    } else if (value0 > value1) {
-        *result = 1;
-    } else {
-        *result = 0;
-    }
-    return 0;
+  value0 = value0 < 0 ? -value0 : value0;
+  value1 = value1 < 0 ? -value1 : value1;
+  if (value0 < value1) {
+    *result = 0;
+  } else if (value0 > value1) {
+    *result = 1;
+  } else {
+    *result = 0;
+  }
+  return 0;
 }
 
 /**
@@ -190,36 +192,36 @@ static int lsIsCloserToZero(double value0, double value1, int *result) {
  */
 static int lsSkewIntervalStep(double *vector, int row_count, double *skew,
                               int *result) {
-    *result = 0;
-    double average;
-    int errnum = lsAverage(vector, row_count, &average);
-    if (errnum != 0) { // Mittelwert
-        printf("\texception in lsAverage: \n");
-        return -1;
-    }
-    double sd;
-    errnum = lsVariance(vector, average, row_count, &sd);
-    if (errnum != 0) { // Standardabweichung
-        printf("\texception in lsVariance: \n");
-        return -2;
-    }
-    double new_skew;
-    errnum = lsSkew(vector, average, sd, row_count, &new_skew);
-    if (errnum != 0) { // Schiefe
-        printf("\texception in lsSkew: \n");
-        return -3;
-    }
-    int compare_flag;
-    errnum = lsIsCloserToZero(*skew, new_skew, &compare_flag);
-    if (errnum != 0) { // Vergleich mit vorheriger Schiefe
-        printf("\texception in lsIsCloserToZero: \n");
-        return -4;
-    }
-    if (compare_flag) {
-        *skew = new_skew;
-        *result = 1;
-    }
-    return 0;
+  *result = 0;
+  double average;
+  int errnum = lsAverage(vector, row_count, &average);
+  if (errnum != 0) { // Mittelwert
+    // printf("\texception in lsAverage: \n");
+    return ERR_AVERAGE | errnum;
+  }
+  double sd;
+  errnum = lsVariance(vector, average, row_count, &sd);
+  if (errnum != 0) { // Standardabweichung
+    // printf("\texception in lsVariance: \n");
+    return ERR_DEVIATION | errnum;
+  }
+  double new_skew;
+  errnum = lsSkew(vector, average, sd, row_count, &new_skew);
+  if (errnum != 0) { // Schiefe
+    // printf("\texception in lsSkew: \n");
+    return ERR_SKEW | errnum;
+  }
+  int compare_flag;
+  errnum = lsIsCloserToZero(*skew, new_skew, &compare_flag);
+  if (errnum != 0) { // Vergleich mit vorheriger Schiefe
+    // printf("\texception in lsIsCloserToZero: \n");
+    return ERR_CLOSER_TO_ZERO | errnum;
+  }
+  if (compare_flag) {
+    *skew = new_skew;
+    *result = 1;
+  }
+  return 0;
 }
 
 /*****************************************************************************
@@ -240,38 +242,46 @@ static int lsSkewIntervalStep(double *vector, int row_count, double *skew,
  */
 int lsLambdaSearch(double *vector, double interval_start, double interval_end,
                    double interval_step, int row_count, double *result_lambda,
-                   double *result_skew) {
-    *result_skew = g_maxHighDouble;
-    double *zws = (double *) malloc(sizeof(double) * row_count);
-    if (zws == NULL) {
-        printf("\tFailed to allocate memory.\n");
-        return -1;
+                   double *result_skew, int *errnum) {
+  *result_skew = g_maxHighDouble;
+  double *zws = (double *)malloc(sizeof(double) * row_count);
+  if (zws == NULL) {
+    *errnum |= ERR_LAMBDA_SEARCH |
+               ERR_FAILED_ALLOCATE_MEMORY; // memory allocation error
+    // printf("\tFailed to allocate memory.\n");
+    return -1;
+  }
+  memset(zws, 0, sizeof(double) * row_count); // is unsecure -> does not matter
+                                              // is overwritten in yjCalculation
+  *result_lambda = interval_start;
+  buildBoundaryBox(interval_start, interval_end);
+  int steps = ceil((interval_end - interval_start) / interval_step);
+  for (int i = 0; i <= steps; i++) {
+    double lambda_i = interval_start + (interval_step * i);
+    for (int i = 0; i < row_count; i++) {
+      *errnum |= yjCalculation(*(vector + i), lambda_i, zws + i);
+      if (*errnum != 0) {
+        *errnum |= ERR_LAMBDA_SEARCH | ERR_ABORT_YEO_JOHNSON;
+        // printf("\texception occured during yeoJohnson\n");
+        free(zws);
+        return -2;
+      }
     }
-    memset(zws, 0, sizeof(double) * row_count);
-    *result_lambda = interval_start;
-    buildBoundaryBox(interval_start, interval_end);
-    for (double lambda_i = interval_start; lambda_i <= interval_end;
-         lambda_i += interval_step) {
-        for (int i = 0; i < row_count; i++) {
-            if (yjCalculation(*(vector + i), lambda_i, zws + i) != 0) {
-                printf("\texception occured during yeoJohnson\n");
-                free(zws);
-                return -2;
-            }
-        }
-        int skew_test_flag;
-        if (lsSkewIntervalStep(zws, row_count, &(*result_skew), &skew_test_flag) !=
-            0) {
-            printf("\texception occured during skewTest\n");
-            free(zws);
-            return -3;
-        }
-        if (skew_test_flag) {
-            *result_lambda = lambda_i;
-        }
+    int skew_test_flag;
+    *errnum |=
+        lsSkewIntervalStep(zws, row_count, &(*result_skew), &skew_test_flag);
+    if (*errnum != 0) {
+      *errnum |= ERR_LAMBDA_SEARCH | ERR_SKEW_TEST;
+      // printf("\texception occured during skewTest\n");
+      free(zws);
+      return -3;
     }
-    free(zws);
-    return 0;
+    if (skew_test_flag) {
+      *result_lambda = lambda_i;
+    }
+  }
+  free(zws);
+  return 0;
 }
 
 /**
@@ -289,44 +299,52 @@ int lsLambdaSearch(double *vector, double interval_start, double interval_end,
  */
 int lsSmartSearch(double *vector, double interval_start, double interval_end,
                   int precision, int row_count, double *result_lambda,
-                  double *result_skew) {
-    double *zws = (double *) malloc(sizeof(double) * row_count);
-    if (zws == NULL) {
-        printf("\tFailed to allocate memory.\n");
-        return -1;
-    }
-    buildBoundaryBox(interval_start, interval_end);
-    double interval_step = 1;
-    for (int s = 0; s <= precision; s++) {
-        memset(zws, 0, sizeof(double) * row_count);
-        *result_lambda = interval_start;
-        *result_skew = g_maxHighDouble;
-        for (double lambda_i = interval_start; lambda_i <= interval_end;
-             lambda_i += interval_step) {
-            for (int i = 0; i < row_count; i++) {
-                if (yjCalculation(*(vector + i), lambda_i, zws + i) != 0) {
-                    printf("\texception occured during yeoJohnson\n");
-                    free(zws);
-                    return -2;
-                }
-            }
-            int skew_test_flag;
-            if (lsSkewIntervalStep(zws, row_count, &(*result_skew),
-                                   &skew_test_flag) != 0) {
-                printf("\texception occured during skewTest\n");
-                free(zws);
-                return -3;
-            }
-            if (skew_test_flag) {
-                *result_lambda = lambda_i;
-            }
+                  double *result_skew, int *errnum) {
+  double *zws = (double *)malloc(sizeof(double) * row_count);
+  if (zws == NULL) {
+    *errnum |= ERR_LAMBDA_SEARCH | ERR_FAILED_ALLOCATE_MEMORY;
+    // printf("\tFailed to allocate memory.\n");
+    return -1;
+  }
+  buildBoundaryBox(interval_start, interval_end);
+  double interval_step = 1;
+  for (int s = 0; s <= precision; s++) {
+    memset(zws, 0, sizeof(double) * row_count); // not secure -> does not matter
+                                                // is overwritten yjCalculation
+    *result_lambda = interval_start;
+    *result_skew = g_maxHighDouble;
+    int steps = ceil((interval_end - interval_start) / interval_step);
+    for (int i = 0; i <= steps; i++) {
+      double lambda_i = interval_start + (interval_step * i);
+      for (int i = 0; i < row_count; i++) {
+        *errnum = yjCalculation(*(vector + i), lambda_i, zws + i);
+        if (*errnum != 0) {
+          *errnum |= ERR_LAMBDA_SEARCH | ERR_ABORT_YEO_JOHNSON;
+          // printf("\texception occured during yeoJohnson\n");
+          free(zws);
+          return -2;
         }
-        interval_start = *result_lambda - interval_step;
-        interval_end = *result_lambda + interval_step;
-        interval_step /= 2;
+      }
+      int skew_test_flag;
+      *errnum =
+          lsSkewIntervalStep(zws, row_count, &(*result_skew), &skew_test_flag);
+      if (*errnum != 0) {
+        *errnum |= ERR_LAMBDA_SEARCH | ERR_SKEW_TEST;
+        // printf("\texception occured during skewTest\n");
+        free(zws);
+        return -3;
+      }
+      if (skew_test_flag) {
+        *result_lambda = lambda_i;
+      }
     }
-    free(zws);
-    return 0;
+    interval_start = *result_lambda - interval_step;
+    interval_end = *result_lambda + interval_step;
+    interval_step /= 2;
+  }
+  free(zws);
+  *errnum = 0;
+  return 0;
 }
 
 /*****************************************************************************

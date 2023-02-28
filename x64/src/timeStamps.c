@@ -1,10 +1,10 @@
 /****************************************************************
-* Copyright (c) 2023 Jerome Brenig, Sigrun May
-* Ostfalia Hochschule für angewandte Wissenschaften
-*
-* This software is distributed under the terms of the MIT license
-* which is available at https://opensource.org/licenses/MIT
-*
+ * Copyright (c) 2023 Jerome Brenig, Sigrun May
+ * Ostfalia Hochschule für angewandte Wissenschaften
+ *
+ * This software is distributed under the terms of the MIT license
+ * which is available at https://opensource.org/licenses/MIT
+ *
  * FILENAME : timeStamps.c
  *
  * DESCRIPTION  :
@@ -50,8 +50,8 @@ static clock_t start, end;
  * @return int error return code
  */
 int tsSetTimer() {
-    start = clock();
-    return 0;
+  start = clock();
+  return 0;
 }
 
 /**
@@ -60,8 +60,8 @@ int tsSetTimer() {
  * @return int error return code
  */
 int tsStopTimer() {
-    end = clock();
-    return 0;
+  end = clock();
+  return 0;
 }
 
 /**
@@ -71,6 +71,6 @@ int tsStopTimer() {
  * @return int error return code
  */
 int tsGetTime(double *time) {
-    *time = (double) (end - start) / CLOCKS_PER_SEC;
-    return 0;
+  *time = (double)(end - start) / CLOCKS_PER_SEC;
+  return 0;
 }
