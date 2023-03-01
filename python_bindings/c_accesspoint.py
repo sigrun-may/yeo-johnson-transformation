@@ -1,17 +1,17 @@
 from collections import namedtuple
-from ctypes import *
-import platform
+from ctypes import CDLL, POINTER, c_double, c_int, pointer, Structure
+
 import numpy as np
 
 
-class MATRIX(Structure):
+class _IntermediateResults(Structure):
     _fields_ = [
         ("rows", c_int),
         ("cols", c_int),
-        ("data", POINTER(POINTER(c_double))),
+        ("data_matrix", POINTER(POINTER(c_double))),
         ("lambdas", POINTER(c_double)),
-        ("skew", POINTER(c_double)),
-        ("errnum", POINTER(c_int)), # <-- new
+        ("skews", POINTER(c_double)),
+        ("error_codes", POINTER(c_int)),
     ]
 
 
@@ -22,83 +22,87 @@ def _construct_c_matrix(matrix, c_data_type):
     #  initialising result vectors
     ptr_lambdas = (c_data_type * column_dimension)()
     ptr_skews = (c_data_type * column_dimension)()
-    ptr_errnum = (c_int * column_dimension)() # <-- new
+    ptr_error_codes = (c_int * column_dimension)()
     #  initialising pointer array
     data_matrix = (POINTER(c_data_type) * column_dimension)()
-    #  filling pointer array with values from matrix
+    #  filling pointer array with values from unlabeled_data_np
     for i in range(column_dimension):
         data_row = (c_data_type * row_dimension)()
         for j in range(row_dimension):
             value = matrix[j][i]
             data_row[j] = c_data_type(value)
         data_matrix[i] = data_row
-    #  transforming matrix into c format
-    return MATRIX(row_dimension, column_dimension, data_matrix, ptr_lambdas, ptr_skews, ptr_errnum)
+    #  transforming unlabeled_data_np into c format
+    return _IntermediateResults(
+        row_dimension, column_dimension, data_matrix, ptr_lambdas, ptr_skews, ptr_error_codes
+    )
 
-def yeo_johnson(
-    matrix,
-    interval_start,
-    interval_end,
-    interval_parameter,
-    standardize,
-    time_stamps,
-    thread_count,
+
+def yeo_johnson_power_transformation(
+    path_to_c_library: str,
+    unlabeled_data_np: np.ndarray,
+    interval_start: float = -3,
+    interval_end: float = 3,
+    interval_parameter: int = 14,
+    standardize: bool = True,
+    time_stamps: bool = False,
+    number_of_threads: int = 1,
 ):
-    # accessing c functionality
-    os = platform.system()
-    if os == 'Linux':
-        yeo_johnson_c = CDLL("../x64/bin/comInterface.so").ciParallelOperation
-    elif os == 'Windows':
-        yeo_johnson_c = CDLL("../x64/bin/comInterface.dll").ciParallelOperation
-    else:
-        print("Please generate your own library and add the link here.")
-        raise EnvironmentError("Only Linux and Windows is supported.")
+    yeo_johnson_c = CDLL(path_to_c_library).ciParallelOperation
+
     # defining parameters
     yeo_johnson_c.argtypes = [
         c_double,
         c_double,
         c_int,
-        POINTER(MATRIX),
+        POINTER(_IntermediateResults),
         c_int,
         c_int,
         c_int,
     ]
-    #defining return type
+    # defining return type
     yeo_johnson_c.restype = c_int
 
-    # Returning matrix with adjusted values
-    #  constructing c struct
-    temp_matrix = _construct_c_matrix(matrix, c_double)
+    # Returning unlabeled_data_np with adjusted values
+    # constructing c struct
+    temp_matrix = _construct_c_matrix(unlabeled_data_np, c_double)
 
-    # check if calculation is serial
-    assert thread_count >= 1
-    
-    #calculating
-    yeo_johnson_c(
-        interval_start,
-        interval_end,
-        interval_parameter,
+    assert number_of_threads >= 1
+    # call C function
+    exit_code = yeo_johnson_c(
+        c_double(interval_start),
+        c_double(interval_end),
+        c_int(interval_parameter),
         pointer(temp_matrix),
-        standardize,
-        time_stamps,
-        thread_count,
+        c_int(standardize),
+        c_int(time_stamps),
+        c_int(number_of_threads),
     )
-    
+
+    print(exit_code)
+    assert temp_matrix.cols == unlabeled_data_np.shape[1]
+    assert temp_matrix.rows == unlabeled_data_np.shape[0]
+
     # override values
     for i in range(temp_matrix.cols):
         for j in range(temp_matrix.rows):
-            matrix[j][i] = temp_matrix.data[i][j]
+            unlabeled_data_np[j][i] = temp_matrix.data_matrix[i][j]
 
-    Result = namedtuple("Result", "matrix lambdas skews errnum")
+    Result = namedtuple(
+        "Result", "unlabeled_transformed_data_np lambdas skews error_codes"
+    )
 
     lambdas = []
     skews = []
-    errnum = []
+    error_codes = []
     for i in range(temp_matrix.cols):
         lambdas.append(temp_matrix.lambdas[i])
-        skews.append(temp_matrix.skew[i])
-        errnum.append(temp_matrix.errnum[i])
+        skews.append(temp_matrix.skews[i])
+        error_codes.append(temp_matrix.error_codes[i])
 
-    result = Result(matrix=matrix, lambdas=lambdas, skews=skews, errnum=errnum)
-
-    return result
+    return Result(
+        unlabeled_transformed_data_np=unlabeled_data_np,
+        lambdas=lambdas,
+        skews=skews,
+        error_codes=error_codes,
+    )

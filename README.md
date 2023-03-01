@@ -26,9 +26,9 @@ Please consider only using compiler and Python version suitable for your machine
 <br>
 <br>
 Compile .so / .dll files:<br>
-1. make dir<br>
-2. make all<br>
 
+1. make dir<br>
+1. make all<br>
 
 ## Licensing
 
