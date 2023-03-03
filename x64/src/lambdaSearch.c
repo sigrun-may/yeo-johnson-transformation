@@ -317,7 +317,7 @@ int lsSmartSearch(double *vector, double interval_start, double interval_end,
     for (int i = 0; i <= steps; i++) {
       double lambda_i = interval_start + (interval_step * i);
       for (int i = 0; i < row_count; i++) {
-        *errnum = yjCalculation(*(vector + i), lambda_i, zws + i);
+        *errnum |= yjCalculation(*(vector + i), lambda_i, zws + i);
         if (*errnum != 0) {
           *errnum |= ERR_LAMBDA_SEARCH | ERR_ABORT_YEO_JOHNSON;
           // printf("\texception occured during yeoJohnson\n");
@@ -326,7 +326,7 @@ int lsSmartSearch(double *vector, double interval_start, double interval_end,
         }
       }
       int skew_test_flag;
-      *errnum =
+      *errnum |=
           lsSkewIntervalStep(zws, row_count, &(*result_skew), &skew_test_flag);
       if (*errnum != 0) {
         *errnum |= ERR_LAMBDA_SEARCH | ERR_SKEW_TEST;
