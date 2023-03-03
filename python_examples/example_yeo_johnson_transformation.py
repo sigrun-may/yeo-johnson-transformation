@@ -19,6 +19,6 @@ data, lambdas, skews, error_codes = yeo_johnson_power_transformation(
     time_stamps=False,
     number_of_threads=1,
 )
-print(max(lambdas))
-print(min(lambdas))
-print("Exit status: ", max(error_codes))
+print("max lambda", max(lambdas))
+print("min lambda", min(lambdas))
+print("exit code:", max(error_codes))

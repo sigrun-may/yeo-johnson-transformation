@@ -119,13 +119,13 @@ def yeo_johnson_power_transformation(
 
 
 def automated_yeo_johnson_power_transformation(path_to_c_library, unlabeled_data_np):
-    Lambda_Interval = namedtuple("Lambda_Interval", "interval_start interval_end")
-    lambda_interval = Lambda_Interval(interval_start=-3, interval_end=3)
+    lambda_interval_start=-3
+    lambda_interval_end=3
     transformed_unlabeled_data_np, lambdas, skews, error_codes = yeo_johnson_power_transformation(
         path_to_c_library=path_to_c_library,
         unlabeled_data_np=unlabeled_data_np,  # 2D numpy array expected
-        interval_start=lambda_interval.interval_start,  # lower bound for lambda
-        interval_end=lambda_interval.interval_end,  # upper bound for lambda
+        interval_start=lambda_interval_start,  # lower bound for lambda
+        interval_end=lambda_interval_end,  # upper bound for lambda
         interval_parameter=14,  # precision
         standardize=True,
         time_stamps=False,
@@ -142,14 +142,15 @@ def automated_yeo_johnson_power_transformation(path_to_c_library, unlabeled_data
                 break
 
         if lambda_error:
-            lambda_interval = Lambda_Interval(interval_start=lambda_interval.interval_start + 1, interval_end=lambda_interval.interval_end - 1)
-            assert lambda_interval.interval_start < 0 < lambda_interval.interval_end
+            lambda_interval_start += 1
+            lambda_interval_end -= 1
+            assert lambda_interval_start < 0 < lambda_interval_end
 
             transformed_unlabeled_data_np, lambdas, skews, error_codes = yeo_johnson_power_transformation(
                 path_to_c_library=path_to_c_library,
                 unlabeled_data_np=unlabeled_data_np,  # 2D numpy array expected
-                interval_start=lambda_interval.interval_start,  # lower bound for lambda
-                interval_end=lambda_interval.interval_end,  # upper bound for lambda
+                interval_start=lambda_interval_start,  # lower bound for lambda
+                interval_end=lambda_interval_end,  # upper bound for lambda
                 interval_parameter=14,  # precision
                 standardize=True,
                 time_stamps=False,

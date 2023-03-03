@@ -13,6 +13,6 @@ data, lambdas, skews, error_codes = automated_yeo_johnson_power_transformation(
     path_to_c_library=path_to_c_library,
     unlabeled_data_np=my_unlabeled_data_np,  # 2D numpy array expected
 )
-print(max(lambdas))
-print(min(lambdas))
-print("Exit status: ", max(error_codes))
+print("max lambda", max(lambdas))
+print("min lambda", min(lambdas))
+print("exit code:", max(error_codes))
