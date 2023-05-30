@@ -126,7 +126,7 @@ def automated_yeo_johnson_power_transformation(path_to_c_library, unlabeled_data
         unlabeled_data_np=unlabeled_data_np,  # 2D numpy array expected
         interval_start=lambda_interval_start,  # lower bound for lambda
         interval_end=lambda_interval_end,  # upper bound for lambda
-        interval_parameter=14,  # precision
+        interval_parameter=7,  # precision
         standardize=True,
         time_stamps=False,
         number_of_threads=4,
