@@ -24,6 +24,10 @@ int lsSmartSearch(double *vector, double interval_start, double interval_end,
                   int precision, int row_count, double *result_lambda,
                   double *result_skew, int *errnum);
 
+int lsSmartBowleySearch(double *vector, double interval_start, double interval_end,
+                        int precision, int row_count, double *result_lambda,
+                        double *result_skew, int *errnum);
+
 // unit tests
 #ifdef UNIT_TEST
 void test_lsAverage(void);

@@ -224,6 +224,143 @@ static int lsSkewIntervalStep(double *vector, int row_count, double *skew,
   return 0;
 }
 
+/**
+ * @brief (double) calculates the bowley skewness of three given parameters
+ * 
+ * @param q1 first quantil
+ * @param q2 seconde quantil (median)
+ * @param q3 third quantil
+ * @param skew result variable for skewness
+ * @param result 1 if the new skew is closer to 0, 0 otherwise
+ * @return int error code
+ */
+static int lsBowleySkewnessStep(double q1, double q2, double q3, double  *skew, int *result) {
+  *result = 0;
+  if (q3-q1==0) {
+    return ERR_SKEW_BOWLEY;
+  }
+  double new_skew = (q3+q1-2*q2)/(q3-q1);
+  int compare_flag;
+  int errnum = lsIsCloserToZero(*skew, new_skew, &compare_flag);
+  if (errnum != 0) { // Vergleich mit vorheriger Schiefe
+    return ERR_CLOSER_TO_ZERO | errnum;
+  }
+  if (compare_flag) {
+    *skew = new_skew;
+    *result = 1;
+  }
+  return 0;
+}
+
+/**
+ * @brief sorts an array
+ * 
+ * @param vector array to be sorted
+ * @param size size of the array
+ * @return int error code
+ */
+// static int lsSortVector(double *vector, int size) {
+//     double sort_arr[2][size];
+//     int pointer_arr = 0;
+//     memset(sort_arr[0], 0, size * sizeof(double));
+//     memset(sort_arr[1], 0, size * sizeof(double));
+
+//     for (int i = 0; i < size; i++) {
+//         int j = 0;
+//         int flag = 1;
+//         while ((j < i) && flag) {
+//             if (sort_arr[pointer_arr][j] <= vector[i]) {
+//                 j++;
+//             } else {
+//                 for (int k = 0; k < j; k++) {
+//                     sort_arr[getFlipped(pointer_arr)][k] = sort_arr[pointer_arr][k];
+//                 }
+//                 sort_arr[getFlipped(pointer_arr)][j] = vector[i];
+//                 for (int k = j; k < i; k++) {
+//                     sort_arr[getFlipped(pointer_arr)][k+1] = sort_arr[pointer_arr][k];
+//                 }
+//                 pointer_arr = getFlipped(pointer_arr);
+//                 flag = 0;
+//             }
+//         }
+//         if (j == i) sort_arr[pointer_arr][i] = vector[i];
+//     }
+//     for (int i = 0; i < size; i++) {
+//         vector[i] = sort_arr[pointer_arr][i];
+//     }
+//     return 0;
+// }
+
+static int divide(double *vector, int left, int right) {
+  int i = left;
+  int j = right - 1;
+  double pivot = vector[right];
+
+  while ( i < j ) {
+    while (i < j && vector[i] <= pivot) i++;
+    while (j > i && vector[j] > pivot) j--;
+    if (vector[i] > vector[j]) {
+      double save = vector[i];
+      vector[i] = vector[j];
+      vector[j] = save;
+    }
+  }
+
+  if (vector[i] > pivot) {
+    double save = vector[i];
+    vector[i] = vector[right];
+    vector[right] = save;
+  } else {
+    i = right;
+  }
+  return i;
+}
+
+static void quickSort(double *vector, int left, int right) {
+  if (left < right) {
+    int divider = divide(vector, left, right);
+    quickSort(vector, left, divider-1);
+    quickSort(vector, divider+1, right);
+  }
+}
+
+static int lsQuickSortVector(double *vector, int size) {
+  quickSort(vector, 0, size-1);
+  return 0;
+}
+
+/**
+ * @brief gets the first, second and third quantil from a vector with a specific size
+ * 
+ * @param vector set of data (sorted)
+ * @param size amount of entries
+ * @param q1 first quantil
+ * @param q2 second quantil (median)
+ * @param q3 third quantil
+ * @return int error code
+ */
+static int lsGetQuantils(double *vector, int size, double *q1, double *q2, double *q3) {
+  double middle = size/2+0.5-1;
+  double first_quarter = size/4-1;
+  double last_quarter = size-first_quarter-1;
+  // Getting median
+  if (fmod(middle, 1)==0) {
+    int pos = middle;
+    *q2 = vector[pos];
+  } else {
+    int pos = middle-0.5;
+    *q2 = (vector[pos] + vector[pos + 1])/2;
+  }
+  // Getting first quantil
+  double leftover = fmod(first_quarter, 1);
+  int pos = first_quarter-leftover;
+  *q1 = vector[pos] * (1-leftover) + vector[pos + 1] * leftover;
+  // Getting last quantil
+  leftover = fmod(first_quarter, 1);
+  pos = last_quarter-leftover;
+  *q3 = vector[pos] * (1-leftover) + vector[pos + 1] * leftover;
+  return 0;
+}
 /*****************************************************************************
  *                           PUBLIC FUNCTIONS
  *****************************************************************************/
@@ -347,6 +484,53 @@ int lsSmartSearch(double *vector, double interval_start, double interval_end,
   return 0;
 }
 
+int lsSmartBowleySearch(double *vector, double interval_start, double interval_end,
+                        int precision, int row_count, double *result_lambda,
+double *result_skew, int *errnum) {
+  double q1, q2, q3;
+  double q1t, q2t, q3t;
+  buildBoundaryBox(interval_start, interval_end);
+  double interval_step = 1;
+  lsQuickSortVector(vector, row_count);  // sort vector
+  lsGetQuantils(vector, row_count, &q1, &q2, &q3); // get q1, q2, q3   
+  for (int s = 0; s <= precision; s++) {
+    *result_lambda = interval_start;
+    *result_skew = g_maxHighDouble;
+    int steps = ceil((interval_end - interval_start) / interval_step);
+    for (int i = 0; i <= steps; i++) {
+      double lambda_i = interval_start + (interval_step * i);
+      *errnum |= yjCalculation(q1, lambda_i, &q1t);
+      if (*errnum != 0) {
+        *errnum |= ERR_LAMBDA_SEARCH | ERR_ABORT_YEO_JOHNSON;
+        return -2;
+      }
+      *errnum |= yjCalculation(q2, lambda_i, &q2t);
+      if (*errnum != 0) {
+        *errnum |= ERR_LAMBDA_SEARCH | ERR_ABORT_YEO_JOHNSON;
+        return -2;
+      }
+      *errnum |= yjCalculation(q3, lambda_i, &q3t);
+      if (*errnum != 0) {
+        *errnum |= ERR_LAMBDA_SEARCH | ERR_ABORT_YEO_JOHNSON;
+        return -2;
+      }
+      int skew_test_flag;
+      *errnum |=
+          lsBowleySkewnessStep(q1t, q2t, q3t, result_skew, &skew_test_flag);
+      if (*errnum != 0) {
+        *errnum |= ERR_LAMBDA_SEARCH | ERR_SKEW_TEST;
+        return -3;
+      }
+      if (skew_test_flag) {
+        *result_lambda = lambda_i;
+      }
+    }
+    interval_start = *result_lambda - interval_step;
+    interval_end = *result_lambda + interval_step;
+    interval_step /= 2;
+  }
+  return 0;        
+}
 /*****************************************************************************
  *                               TESTS
  *****************************************************************************/

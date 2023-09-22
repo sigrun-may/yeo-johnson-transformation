@@ -26,6 +26,7 @@
 #define ERR_DEVIATION 0x0060      // error in lambdaSearch variance
 #define ERR_SKEW 0x0070           // error in lambdaSearch skew
 #define ERR_CLOSER_TO_ZERO 0x0080 // error in lambdaSearch isCloserToZero
+#define ERR_SKEW_BOWLEY 0x0090    // error in lambdaSearch bowley skewness
 
 #define ERR_VECTOR_IS_NULL 0x0001  // the pointer is null
 #define ERR_NOT_ENOUGH_ROWS 0x0002 // not enough rows to calculate avg/sd/skew

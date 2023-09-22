@@ -48,7 +48,8 @@ def yeo_johnson_power_transformation(
     time_stamps: bool = False,
     number_of_threads: int = 1,
 ):
-    yeo_johnson_c = CDLL(path_to_c_library).ciParallelOperation
+    #yeo_johnson_c = CDLL(path_to_c_library).ciParallelOperation
+    yeo_johnson_c = CDLL(path_to_c_library).ciParallelOperationBowley
 
     # defining parameters
     yeo_johnson_c.argtypes = [
