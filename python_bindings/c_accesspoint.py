@@ -1,7 +1,17 @@
+# Copyright (c) 2023 Jerome Brenig, Sigrun May, Ostfalia Hochschule für angewandte Wissenschaften
+# This software is distributed under the terms of the MIT license
+# which is available at https://opensource.org/licenses/MIT
+
+import math
 from collections import namedtuple
-from ctypes import CDLL, POINTER, c_double, c_int, pointer, Structure
+from ctypes import CDLL, POINTER, Structure, c_double, c_int, pointer
 
 import numpy as np
+
+
+Result = namedtuple(
+    "Result", "unlabeled_transformed_data_np lambdas skews error_codes"
+)
 
 
 class _IntermediateResults(Structure):
@@ -34,7 +44,12 @@ def _construct_c_matrix(matrix, c_data_type):
         data_matrix[i] = data_row
     #  transforming unlabeled_data_np into c format
     return _IntermediateResults(
-        row_dimension, column_dimension, data_matrix, ptr_lambdas, ptr_skews, ptr_error_codes
+        row_dimension,
+        column_dimension,
+        data_matrix,
+        ptr_lambdas,
+        ptr_skews,
+        ptr_error_codes,
     )
 
 
@@ -70,7 +85,7 @@ def yeo_johnson_power_transformation(
 
     assert number_of_threads >= 1
     # call C function
-    exit_code = yeo_johnson_c(
+    yeo_johnson_c(
         c_double(interval_start),
         c_double(interval_end),
         c_int(interval_parameter),
@@ -79,8 +94,6 @@ def yeo_johnson_power_transformation(
         c_int(time_stamps),
         c_int(number_of_threads),
     )
-
-    print(exit_code)
     assert temp_matrix.cols == unlabeled_data_np.shape[1]
     assert temp_matrix.rows == unlabeled_data_np.shape[0]
 
@@ -88,10 +101,6 @@ def yeo_johnson_power_transformation(
     for i in range(temp_matrix.cols):
         for j in range(temp_matrix.rows):
             unlabeled_data_np[j][i] = temp_matrix.data_matrix[i][j]
-
-    Result = namedtuple(
-        "Result", "unlabeled_transformed_data_np lambdas skews error_codes"
-    )
 
     lambdas = []
     skews = []
@@ -101,9 +110,120 @@ def yeo_johnson_power_transformation(
         skews.append(temp_matrix.skews[i])
         error_codes.append(temp_matrix.error_codes[i])
 
+    if max(error_codes) > 0:
+        exception_handling(error_codes)
+        raise Exception('Error in Yeo Johnson transformation. Try automated_yeo_johnson_power_transformation '
+                        'for automated parameter search.')
+
     return Result(
         unlabeled_transformed_data_np=unlabeled_data_np,
         lambdas=lambdas,
         skews=skews,
         error_codes=error_codes,
     )
+
+
+def automated_yeo_johnson_power_transformation(path_to_c_library, unlabeled_data_np):
+    lambda_interval_start=-3
+    lambda_interval_end=3
+    transformed_unlabeled_data_np, lambdas, skews, error_codes = yeo_johnson_power_transformation(
+        path_to_c_library=path_to_c_library,
+        unlabeled_data_np=unlabeled_data_np,  # 2D numpy array expected
+        interval_start=lambda_interval_start,  # lower bound for lambda
+        interval_end=lambda_interval_end,  # upper bound for lambda
+        interval_parameter=7,  # precision
+        standardize=True,
+        time_stamps=False,
+        number_of_threads=4,
+    )
+    counter = 0
+    while counter < 100 and max(error_codes) > 0:
+        lambda_error = False
+        for error_code in error_codes:
+            nibble = error_code & 0xF000
+            if nibble ^ 0x1000 == 0x0000:
+                print("Error occurred during lambda search. Adapting lambda.")
+                lambda_error = True
+                break
+
+        if lambda_error:
+            lambda_interval_start += 1
+            lambda_interval_end -= 1
+            assert lambda_interval_start < 0 < lambda_interval_end
+
+            transformed_unlabeled_data_np, lambdas, skews, error_codes = yeo_johnson_power_transformation(
+                path_to_c_library=path_to_c_library,
+                unlabeled_data_np=unlabeled_data_np,  # 2D numpy array expected
+                interval_start=lambda_interval_start,  # lower bound for lambda
+                interval_end=lambda_interval_end,  # upper bound for lambda
+                interval_parameter=14,  # precision
+                standardize=True,
+                time_stamps=False,
+                number_of_threads=1,
+            )
+        counter += 1
+        print(counter)
+
+    return Result(
+        unlabeled_transformed_data_np=transformed_unlabeled_data_np,
+        lambdas=lambdas,
+        skews=skews,
+        error_codes=error_codes,
+    )
+
+
+def exception_handling(error_codes, lambda_interval_tuple=None):
+    for error_code in error_codes:
+        # note: nibble is a half byte
+
+        # first nibble error code segment - super function
+        nibble = error_code & 0xF000
+        if nibble ^ 0x1000 == 0x0000:
+            print("Error occurred during lambda search")
+        elif nibble ^ 0x2000 == 0x0000:
+            print("Error occurred while transforming data")
+
+        # second nibble error code segment - function
+        nibble = error_code & 0x0F00
+        if nibble ^ 0x0100 == 0x0000:
+            print(" Error occurred while testing skewness")
+        elif nibble ^ 0x0200 == 0x0000:
+            print(" Error occurred during Yeo Johnson")
+        elif nibble ^ 0x0300 == 0x0000:
+            print(" Failed to allocate memory")
+
+        # third nibble error code segment - branch
+        nibble = error_code & 0x00F0
+        if nibble ^ 0x0010 == 0x0000:
+            print("     Exception in Yeo Johnson formular 1")
+        elif nibble ^ 0x0020 == 0x0000:
+            print("     Exception in Yeo Johnson formular 2")
+        elif nibble ^ 0x0030 == 0x0000:
+            print("     Exception in Yeo Johnson formular 3")
+        elif nibble ^ 0x0040 == 0x0000:
+            print("     Exception in Yeo Johnson formular 4")
+        elif nibble ^ 0x0050 == 0x0000:
+            print("     Exception while calculating median")
+        elif nibble ^ 0x0060 == 0x0000:
+            print("     Exception while calculating standard deviation")
+        elif nibble ^ 0x0070 == 0x0000:
+            print("     Exception while calculating skew")
+        elif nibble ^ 0x0080 == 0x0000:
+            print("     Exception in function isCloserToZero (unknown path #BUG)")
+
+        # fourth nibble error code segment - error identifier
+        nibble = error_code & 0x000F
+        if nibble ^ 0x0001 == 0x0000:
+            print("         Vector is null (Null Pointer Exception)")
+        elif nibble ^ 0x0002 == 0x0000:
+            print("         Not enough rows (calculating skew needs at least 3 rows)")
+        elif nibble ^ 0x0003 == 0x0000:
+            print(
+                "         Value exceeded limit (one value inside vector is too large for calculation)"
+            )
+        elif nibble ^ 0x0004 == 0x0000:
+            print(
+                "         Value not inside boundary box (combination of y in vector and lambda results in overflow)"
+            )
+        elif nibble ^ 0x0005 == 0x0000:
+            print("         Boundary Box is not set (unknown path #BUG)")
